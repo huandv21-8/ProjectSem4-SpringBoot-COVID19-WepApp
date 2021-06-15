@@ -1,5 +1,6 @@
 package com.example.footballshopwebapp.controller.admin;
 
+import com.example.footballshopwebapp.dto.response.PeopleResponseAdmin;
 import com.example.footballshopwebapp.entity.Sick;
 import com.example.footballshopwebapp.service.SickService;
 import lombok.AllArgsConstructor;
@@ -21,8 +22,8 @@ public class SickController {
     private final SickService sickService;
 
     @GetMapping
-    public ResponseEntity<List<Sick>> getAllPosts() {
-        List<Sick> list= sickService.getAllSick();
+        public ResponseEntity<List<PeopleResponseAdmin>> getAllPosts() {
+        List<PeopleResponseAdmin> list= sickService.getAllSick();
         return status(HttpStatus.OK).body(list);
     }
 

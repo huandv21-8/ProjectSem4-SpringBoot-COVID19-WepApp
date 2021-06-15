@@ -31,6 +31,11 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
     @Override
     public Message createPeople(PeopleRequest peopleRequest) throws SpringException {
         try {
+
+            if(!peopleRequest.getPhone().matches("[0-9]+") && peopleRequest.getPhone().length() == 10){
+                throw new SpringException("SĐT phải là số và đủ 10 số.");
+            }
+
             People people = new People();
             people.setName(peopleRequest.getName());
             people.setAge(peopleRequest.getAge());

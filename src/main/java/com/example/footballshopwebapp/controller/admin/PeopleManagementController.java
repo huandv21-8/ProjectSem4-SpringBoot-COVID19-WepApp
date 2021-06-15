@@ -23,6 +23,5 @@ public class PeopleManagementController {
     @PostMapping("/createPeople")
     public Message createPeople(@RequestBody PeopleRequest peopleRequest) throws SpringException {
      return peopleManagementService.createPeople(peopleRequest);
-//        return new Message("succ");
     }
 }
