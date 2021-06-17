@@ -1,6 +1,9 @@
 package com.example.footballshopwebapp.service.imp;
 
 import com.example.footballshopwebapp.dto.request.PeopleRequest;
+import com.example.footballshopwebapp.dto.response.PeopleDetailResponseAdmin;
+import com.example.footballshopwebapp.dto.response.PeopleResponseAdmin;
+import com.example.footballshopwebapp.entity.Cured;
 import com.example.footballshopwebapp.entity.F1;
 import com.example.footballshopwebapp.entity.People;
 import com.example.footballshopwebapp.entity.Sick;
@@ -9,16 +12,20 @@ import com.example.footballshopwebapp.repository.*;
 import com.example.footballshopwebapp.service.PeopleManagementService;
 import com.example.footballshopwebapp.share.Message;
 import com.example.footballshopwebapp.share.helper.VariableCommon;
+import com.example.footballshopwebapp.share.mapper.PeopleDetailResponseMapper;
+import com.example.footballshopwebapp.share.mapper.PeopleMapper;
 import lombok.AllArgsConstructor;
-//import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-@Transactional
+//@Transactional
 public class PeopleManagementServiceImp implements PeopleManagementService {
 
     private final PeopleRepository peopleRepository;
@@ -27,12 +34,17 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
     private final DistrictRepository districtRepository;
     private final ProvinceRepository provinceRepository;
     private final F1Repository f1Repository;
+    private final CuredRepository curedRepository;
+    private final PeopleMapper peopleMapper;
+    private final PeopleDetailResponseMapper peopleDetailResponseMapper;
+
 
     @Override
+    @Transactional
     public Message createPeople(PeopleRequest peopleRequest) throws SpringException {
         try {
 
-            if(!peopleRequest.getPhone().matches("[0-9]+") && peopleRequest.getPhone().length() == 10){
+            if (!peopleRequest.getPhone().matches("[0-9]+") && peopleRequest.getPhone().length() == 10) {
                 throw new SpringException("SĐT phải là số và đủ 10 số.");
             }
 
@@ -71,4 +83,37 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
         }
 
     }
+
+    @Override
+    public List<PeopleResponseAdmin> getAllPeopleByStatus(String status) {
+        if (status.equals(VariableCommon.SICK)) {
+            List<Sick> list1 = sickRepository.findAll();
+            return list1.stream().map(sick -> peopleMapper.sickResponseAdminMap(sick)).collect(Collectors.toList());
+        } else if (status.equals(VariableCommon.F1)) {
+            return f1Repository.findAll().stream().map(peopleMapper::f1ResponseAdminMap).collect(Collectors.toList());
+        } else if (status.equals(VariableCommon.CURED)) {
+            return curedRepository.findAll().stream().map(peopleMapper::curedResponseAdminMap).collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    @Override
+    public PeopleDetailResponseAdmin peopleDetailByStatus(String status, Long idPeople) {
+        if (status.equals(VariableCommon.SICK)) {
+            Sick sick = sickRepository.findById(idPeople).orElseThrow(() -> new SpringException("Không có người bệnh nào có id là: " + idPeople));
+
+//            Date myDate = Date.from(sick.getTime());
+            PeopleDetailResponseAdmin a= peopleDetailResponseMapper.sickDetailResponseAdminMap(sick);
+            return a;
+        } else if (status.equals(VariableCommon.F1)) {
+            F1 f1 = f1Repository.findById(idPeople).orElseThrow(() -> new SpringException("Không có người f1 nào có id là: " + idPeople));
+            return peopleDetailResponseMapper.f1DetailResponseAdminMap(f1);
+        } else if (status.equals(VariableCommon.CURED)) {
+            Cured cured = curedRepository.findById(idPeople).orElseThrow(() -> new SpringException("Không có người bệnh nào đã khỏi có id là: " + idPeople));
+            return peopleDetailResponseMapper.curedDetailResponseAdminMap(cured);
+        }
+        return null;
+    }
+
+
 }

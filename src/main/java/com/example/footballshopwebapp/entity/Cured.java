@@ -24,7 +24,7 @@ public class Cured implements Serializable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "peopleId", referencedColumnName = "peopleId")
     private People people;
-
-    private boolean status;
+    private boolean type;
+    private String status;
     private Instant time;
 }
