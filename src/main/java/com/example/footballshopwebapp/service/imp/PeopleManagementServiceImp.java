@@ -19,13 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-//@Transactional
 public class PeopleManagementServiceImp implements PeopleManagementService {
 
     private final PeopleRepository peopleRepository;
