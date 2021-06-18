@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -24,8 +24,9 @@ public class PeopleDetailResponseAdmin {
     private String province;
     private String district;
     private String commune;
-    private Instant time;
+    private Date time;
     private String status;
     private boolean type;
     private Long idSource;
+    private String nameSource;
 }

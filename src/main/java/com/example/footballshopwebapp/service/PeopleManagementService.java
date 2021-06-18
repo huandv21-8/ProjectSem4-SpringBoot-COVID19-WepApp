@@ -15,4 +15,6 @@ public interface PeopleManagementService {
     List<PeopleResponseAdmin> getAllPeopleByStatus(String status);
 
     PeopleDetailResponseAdmin peopleDetailByStatus(String status,Long idPeople);
+
+    Message deletePeopleById(String status, Long idPeople);
 }

@@ -36,7 +36,7 @@ public interface PeopleDetailResponseMapper {
     @Mapping(target = "commune", source = "people.commune.communeName")
     @Mapping(target = "time", source = "time")
     @Mapping(target = "status", source = "status")
-//    @Mapping(target = "type", source = "type")
+    @Mapping(target = "type", source = "type")
     @Mapping(target = "idSource", source = "sickSource.sickId")
     PeopleDetailResponseAdmin f1DetailResponseAdminMap(F1 f1);
 

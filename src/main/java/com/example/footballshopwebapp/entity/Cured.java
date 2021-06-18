@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Date;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -26,5 +27,7 @@ public class Cured implements Serializable {
     private People people;
     private boolean type;
     private String status;
-    private Instant time;
+    private Date time;
+    private boolean active;
+
 }

@@ -39,4 +39,12 @@ public class PeopleManagementController {
             @RequestParam(required = false, name = "idPeople") Long idPeople) {
         return status(HttpStatus.OK).body(peopleManagementService.peopleDetailByStatus(status, idPeople));
     }
+
+    @DeleteMapping("/deletePeopleById/{idPeople}")
+    public ResponseEntity<Message> deletePeopleById(
+            @RequestParam(required = false, name = "status") String status,
+            @PathVariable Long idPeople) {
+        return status(HttpStatus.OK).body(peopleManagementService.deletePeopleById(status, idPeople));
+    }
+
 }

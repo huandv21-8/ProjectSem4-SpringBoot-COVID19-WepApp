@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Date;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -26,7 +27,8 @@ public class Sick implements Serializable {
     private People people;
     private boolean type;
     private String status;
-    private Instant time;
-
+    private Date time;
     private Long idSickSource;
+    private boolean active;
+
 }

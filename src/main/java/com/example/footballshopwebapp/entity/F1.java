@@ -9,6 +9,7 @@ import javax.persistence.*;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Date;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -25,11 +26,13 @@ public class F1 implements Serializable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "peopleId", referencedColumnName = "peopleId")
     private People people;
-
+    private boolean type;
     private String status;
-    private Instant time;
+    private Date time;
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sickId", referencedColumnName = "sickId")
     private Sick sickSource;
+    private boolean active;
+
 }

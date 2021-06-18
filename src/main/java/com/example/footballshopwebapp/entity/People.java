@@ -10,6 +10,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
@@ -29,7 +31,6 @@ public class People {
     private int age;
     @NonNull
     private boolean gender;
-    @NotBlank(message = "Phone is required")
     private String phone;
     @NotBlank(message = "Schedule is required")
     private String schedule;
@@ -49,6 +50,7 @@ public class People {
     @JoinColumn(name = "communeId", referencedColumnName = "communeId")
     private Commune commune;
 
-    private Instant time;
+    private Date time;
+
 
 }
