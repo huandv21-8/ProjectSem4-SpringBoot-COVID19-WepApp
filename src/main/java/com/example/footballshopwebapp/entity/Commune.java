@@ -1,6 +1,7 @@
 package com.example.footballshopwebapp.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,6 +27,7 @@ public class Commune implements Serializable {
     private String communeName;
     private String type;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "districtId", referencedColumnName = "districtId")
     private District district;

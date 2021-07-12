@@ -3,10 +3,7 @@ package com.example.footballshopwebapp.service.imp;
 import com.example.footballshopwebapp.dto.request.PeopleRequest;
 import com.example.footballshopwebapp.dto.response.PeopleDetailResponseAdmin;
 import com.example.footballshopwebapp.dto.response.PeopleResponseAdmin;
-import com.example.footballshopwebapp.entity.Cured;
-import com.example.footballshopwebapp.entity.F1;
-import com.example.footballshopwebapp.entity.People;
-import com.example.footballshopwebapp.entity.Sick;
+import com.example.footballshopwebapp.entity.*;
 import com.example.footballshopwebapp.exceptions.SpringException;
 import com.example.footballshopwebapp.repository.*;
 import com.example.footballshopwebapp.service.PeopleManagementService;
@@ -21,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +35,7 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
     private final ProvinceRepository provinceRepository;
     private final F1Repository f1Repository;
     private final CuredRepository curedRepository;
+    private final DiedRepository diedRepository;
     private final PeopleMapper peopleMapper;
     private final PeopleDetailResponseMapper peopleDetailResponseMapper;
     private final DateHelper dateHelper;
@@ -92,15 +91,19 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
 
     @Override
     public List<PeopleResponseAdmin> getAllPeopleByStatus(String status) {
+        List<PeopleResponseAdmin> peopleResponseAdminList = null;
         if (status.equals(VariableCommon.SICK)) {
-            List<Sick> list1 = sickRepository.findAllByActiveTrue();
-            return list1.stream().map(sick -> peopleMapper.sickResponseAdminMap(sick)).collect(Collectors.toList());
+            List<Sick> list1 = sickRepository.listSickByActiveTrue();
+            peopleResponseAdminList = list1.stream().map(sick -> peopleMapper.sickResponseAdminMap(sick)).collect(Collectors.toList());
         } else if (status.equals(VariableCommon.F1)) {
-            return f1Repository.findAllByActiveTrue().stream().map(peopleMapper::f1ResponseAdminMap).collect(Collectors.toList());
+            peopleResponseAdminList = f1Repository.listF1ByActiveTrue().stream().map(peopleMapper::f1ResponseAdminMap).collect(Collectors.toList());
         } else if (status.equals(VariableCommon.CURED)) {
-            return curedRepository.findAllByActiveTrue().stream().map(peopleMapper::curedResponseAdminMap).collect(Collectors.toList());
+            peopleResponseAdminList = curedRepository.listCuredByActiveTrue().stream().map(peopleMapper::curedResponseAdminMap).collect(Collectors.toList());
+        } else if (status.equals(VariableCommon.DIED)) {
+            peopleResponseAdminList = diedRepository.findAllByActiveTrue().stream().map(peopleMapper::diedResponseAdminMap).collect(Collectors.toList());
         }
-        return null;
+
+        return peopleResponseAdminList;
     }
 
     @Override
@@ -115,6 +118,9 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
         } else if (status.equals(VariableCommon.CURED)) {
             Cured cured = curedRepository.findById(idPeople).orElseThrow(() -> new SpringException("Không có người bệnh nào đã khỏi có id là: " + idPeople));
             peopleDetailResponseAdmin = peopleDetailResponseMapper.curedDetailResponseAdminMap(cured);
+        } else if (status.equals(VariableCommon.DIED)) {
+            Died died = diedRepository.findById(idPeople).orElseThrow(() -> new SpringException("Không có người bệnh nào đã khỏi có id là: " + idPeople));
+            peopleDetailResponseAdmin = peopleDetailResponseMapper.diedDetailResponseAdminMap(died);
         }
         if (peopleDetailResponseAdmin.getIdSource() != null) {
             Sick sick = sickRepository.findById(peopleDetailResponseAdmin.getIdSource()).orElseThrow(() -> new SpringException("Không có người bệnh nào có id là: " + idPeople));
@@ -124,6 +130,7 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
     }
 
     @Override
+    @Transactional
     public Message deletePeopleById(String status, Long idPeople) throws SpringException {
         try {
             if (status.equals(VariableCommon.SICK)) {
@@ -146,12 +153,25 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
                 Cured cured = curedRepository.findById(idPeople).orElseThrow(() -> new SpringException("Không có người bệnh nào đã khỏi có id là: " + idPeople));
                 cured.setActive(false);
                 curedRepository.save(cured);
+            } else if (status.equals(VariableCommon.DIED)) {
+                Died died = diedRepository.findById(idPeople).orElseThrow(() -> new SpringException("Không có người bệnh nào đã khỏi có id là: " + idPeople));
+                died.setActive(false);
+                diedRepository.save(died);
             }
             return new Message("Xóa thành công.");
         } catch (Exception e) {
             throw new SpringException("Lỗi rồi.");
         }
 
+    }
+
+    @Override
+    @Transactional
+    public Message deleteAllPeopleByCheckbox(String status, List<Long> listIdPeopleCheckbox) {
+        for (Long id : listIdPeopleCheckbox) {
+            deletePeopleById(status, id);
+        }
+        return new Message("Xóa thành công.");
     }
 
 

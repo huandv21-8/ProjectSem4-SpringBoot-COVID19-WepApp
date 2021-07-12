@@ -17,4 +17,6 @@ public interface PeopleManagementService {
     PeopleDetailResponseAdmin peopleDetailByStatus(String status,Long idPeople);
 
     Message deletePeopleById(String status, Long idPeople);
+
+    Message deleteAllPeopleByCheckbox(String status, List<Long> listIdPeopleCheckbox);
 }

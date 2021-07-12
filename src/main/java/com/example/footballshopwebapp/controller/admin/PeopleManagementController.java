@@ -41,10 +41,20 @@ public class PeopleManagementController {
     }
 
     @DeleteMapping("/deletePeopleById/{idPeople}")
-    public ResponseEntity<Message> deletePeopleById(
+    public ResponseEntity<Void> deletePeopleById(
             @RequestParam(required = false, name = "status") String status,
             @PathVariable Long idPeople) {
-        return status(HttpStatus.OK).body(peopleManagementService.deletePeopleById(status, idPeople));
+        peopleManagementService.deletePeopleById(status, idPeople);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PostMapping("/deleteAllPeopleByCheckbox")
+    public ResponseEntity<Void> deleteAllPeopleByCheckbox(
+            @RequestParam(required = false, name = "status") String status,
+            @RequestBody List<Long> listIdPeopleCheckbox) {
+        peopleManagementService.deleteAllPeopleByCheckbox(status, listIdPeopleCheckbox);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
 }
