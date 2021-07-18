@@ -5,4 +5,10 @@ public class VariableCommon {
     public static final String SICK = "sick";
     public static final String CURED = "cured";
     public static final String DIED = "died";
+
+    public static final String DAY = "Day";
+    public static final String MONTH = "Month";
+    public static final String YEAR = "Year";
+
+
 }
