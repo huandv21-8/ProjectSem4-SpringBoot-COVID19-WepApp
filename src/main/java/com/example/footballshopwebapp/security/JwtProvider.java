@@ -24,7 +24,6 @@ public class JwtProvider {
     private KeyStore keyStore;
     @Value("${jwt.expiration.time}")
     private Long jwtExpirationInMillis;
-    Map<String, Object> claims = new HashMap<>();
     private final String secret = "Covid19vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv";
 
 //    @PostConstruct
@@ -50,9 +49,9 @@ public class JwtProvider {
                 .compact();
     }
 
-    public String generateTokenWithUserName(String username) {
+    public String generateTokenWithUserName(String email) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(email)
                 .setIssuedAt(from(Instant.now()))
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .setExpiration(Date.from(Instant.now().plusMillis(jwtExpirationInMillis)))

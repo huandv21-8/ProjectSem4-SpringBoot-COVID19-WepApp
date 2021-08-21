@@ -39,7 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/v1/auth/**")
                 .permitAll()
 //                .antMatchers(HttpMethod.POST, "/api/posts/").hasRole("ADMIN")
-                .anyRequest()
+                .anyRequest()  // Tất cả các request khác đều cần phải xác thực mới được truy cập
                 .authenticated();
 
         httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -47,12 +47,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder.userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder());
+        authenticationManagerBuilder.userDetailsService(userDetailsService) // Cung cáp userDetailsService cho spring security
+                .passwordEncoder(passwordEncoder());  // cung cấp password encoder
+//        authenticationManagerBuilder.inMemoryAuthentication().withUser(userDetailsService.)
     }
 
     @Bean
     PasswordEncoder passwordEncoder() {
+        // Password encoder, để Spring Security sử dụng mã hóa mật khẩu người dùng
         return new BCryptPasswordEncoder();
     }
 }

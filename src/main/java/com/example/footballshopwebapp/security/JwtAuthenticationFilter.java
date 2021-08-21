@@ -28,13 +28,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        HttpServletRequest httpServletRequest = request;
-        String jwt = getJwtFromRequest(httpServletRequest);
+        String jwt = getJwtFromRequest(request);
 
         if (StringUtils.hasText(jwt) && jwtProvider.validateToken(jwt)) {
             String email = jwtProvider.getEmailFromJwt(jwt);
 
-            UserDetails userDetails = userDetailsService.loadUserByUsername("dohuan2k1@gmail.com");
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails,
                     null, userDetails.getAuthorities());
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));  // set xem thằng nào đang login

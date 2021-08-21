@@ -15,6 +15,7 @@ public interface SickRepository extends JpaRepository<Sick,Long> {
    @Query(value = "Select * from sick inner join ( Select max(time) as LatestDate, people_id as id from sick Group by people_id ) SubMax on sick.time = SubMax.LatestDate and sick.people_id = SubMax.id WHERE active = true AND status = 'sick'",nativeQuery = true)
    List<Sick> listSickByActiveTrue();
 
+
     List<Sick> findAllByTimeEqualsAndStatus(Date time, String sick);
 
     List<Sick> findAllByStatus(String sick);

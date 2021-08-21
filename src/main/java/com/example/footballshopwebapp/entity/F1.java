@@ -18,6 +18,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+//@Table(name = "hdaskj",schema = "djh")
 public class F1 implements Serializable {
     @Id
     @GeneratedValue(strategy = IDENTITY)

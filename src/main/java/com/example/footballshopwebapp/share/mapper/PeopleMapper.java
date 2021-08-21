@@ -39,8 +39,6 @@ public interface PeopleMapper {
     @Mapping(target = "name", source = "sick.people.name")
     @Mapping(target = "age", source = "sick.people.age")
     @Mapping(target = "nameProvince", source = "sick.people.province.provinceName")
-//    @Mapping(target = "status", source = "status")
-//    @Mapping(target = "type", source = "type")
     PeopleResponseAdmin diedResponseAdminMap(Died died);
 
 }
