@@ -9,6 +9,7 @@ import com.example.footballshopwebapp.share.Message;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class PeopleManagementController {
 
 
     @PostMapping("/createPeople")
-    public Message createPeople(@RequestBody PeopleRequest peopleRequest) throws SpringException {
+    public Message createPeople(@RequestBody @Validated PeopleRequest peopleRequest) throws SpringException {
         return peopleManagementService.createPeople(peopleRequest);
     }
 
