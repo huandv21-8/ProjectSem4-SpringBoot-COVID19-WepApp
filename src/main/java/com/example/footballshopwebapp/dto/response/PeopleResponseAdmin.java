@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,8 +14,9 @@ import lombok.NoArgsConstructor;
 public class PeopleResponseAdmin {
     private Long idPeople;
     private String name;
-    private int age;
+    private String birthDay;
     private String nameProvince;
     private String status;
     private boolean type;
+    private Long idStatusByTime;
 }

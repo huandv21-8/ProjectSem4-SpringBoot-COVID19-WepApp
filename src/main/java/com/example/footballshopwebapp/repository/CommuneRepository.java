@@ -10,4 +10,5 @@ import java.util.List;
 public interface CommuneRepository extends JpaRepository<Commune, Long> {
     Commune findByCommuneId(Long id);
     List<Commune>  findAllByDistrict_DistrictId(Long idDistrict);
+
 }

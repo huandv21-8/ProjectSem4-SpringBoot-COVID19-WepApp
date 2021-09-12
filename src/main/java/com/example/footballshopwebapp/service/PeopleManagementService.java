@@ -7,6 +7,7 @@ import com.example.footballshopwebapp.exceptions.SpringException;
 import com.example.footballshopwebapp.share.Message;
 
 import java.util.List;
+import java.util.Map;
 
 public interface PeopleManagementService {
 
@@ -14,9 +15,11 @@ public interface PeopleManagementService {
 
     List<PeopleResponseAdmin> getAllPeopleByStatus(String status);
 
-    PeopleDetailResponseAdmin peopleDetailByStatus(String status,Long idPeople);
+    PeopleDetailResponseAdmin peopleDetailByStatus(String status,Long idStatusByTime);
 
     Message deletePeopleById(String status, Long idPeople);
 
     Message deleteAllPeopleByCheckbox(String status, List<Long> listIdPeopleCheckbox);
+
+    Map<String, Long> staticalTotalPeopleByStatus();
 }

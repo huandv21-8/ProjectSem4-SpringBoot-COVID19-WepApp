@@ -1,10 +1,10 @@
 package com.example.footballshopwebapp.service;
 
 
-import com.example.footballshopwebapp.dto.AuthenticationResponse;
-import com.example.footballshopwebapp.dto.LoginRequest;
+import com.example.footballshopwebapp.dto.response.AuthenticationResponse;
+import com.example.footballshopwebapp.dto.request.LoginRequest;
 import com.example.footballshopwebapp.dto.RefreshTokenRequest;
-import com.example.footballshopwebapp.dto.RegisterRequest;
+import com.example.footballshopwebapp.dto.request.RegisterRequest;
 import com.example.footballshopwebapp.exceptions.SpringException;
 import com.example.footballshopwebapp.entity.NotificationEmail;
 import com.example.footballshopwebapp.entity.Role;

@@ -28,4 +28,6 @@ public class Situation {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", referencedColumnName = "userId")
     private User user;
+
+    private boolean active;
 }

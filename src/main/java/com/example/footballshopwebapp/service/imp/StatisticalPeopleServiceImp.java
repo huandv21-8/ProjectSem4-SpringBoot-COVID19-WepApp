@@ -1,28 +1,30 @@
 package com.example.footballshopwebapp.service.imp;
 
-import com.example.footballshopwebapp.entity.Cured;
-import com.example.footballshopwebapp.entity.Died;
-import com.example.footballshopwebapp.entity.Sick;
-import com.example.footballshopwebapp.repository.CuredRepository;
-import com.example.footballshopwebapp.repository.DiedRepository;
-import com.example.footballshopwebapp.repository.SickRepository;
+import com.example.footballshopwebapp.dto.response.CountPeopleByProvince;
+import com.example.footballshopwebapp.dto.response.CountPeopleByStatusAboutProvince;
+
+import com.example.footballshopwebapp.dto.response.ICountPeopleByProvince;
+import com.example.footballshopwebapp.entity.StatusByTime;
+import com.example.footballshopwebapp.repository.StatusByTimeRepository;
 import com.example.footballshopwebapp.service.StatisticalPeopleService;
+
 import com.example.footballshopwebapp.share.helper.DateHelper;
 import com.example.footballshopwebapp.share.helper.VariableCommon;
-import io.swagger.models.auth.In;
 import lombok.AllArgsConstructor;
+
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class StatisticalPeopleServiceImp implements StatisticalPeopleService {
+
     private final DateHelper dateHelper;
-    private final CuredRepository curedRepository;
-    private final SickRepository sickRepository;
-    private final DiedRepository diedRepository;
+    private final StatusByTimeRepository statusByTimeRepository;
+
+
 
 
     @Override
@@ -34,72 +36,71 @@ public class StatisticalPeopleServiceImp implements StatisticalPeopleService {
             TreeMap<Date, Integer> mapSickByTime = new TreeMap<>();
             TreeMap<Date, Integer> mapDiedByTime = new TreeMap<>();
             List<Date> listDate;
+
+            List<StatusByTime> curedList = new ArrayList<>();
+            List<StatusByTime> diedList = new ArrayList<>();
+            List<StatusByTime> sickList = new ArrayList<>();
+
+            String formTime;
+
             if (timeForm.equals(VariableCommon.DAY)) {
                 listDate = dateHelper.getDatesBetweenDay(Calendar.DAY_OF_MONTH, 30);
-                System.out.println(listDate.size());
-                listDate.forEach(time -> {
-                    System.out.println(dateHelper.convertDateToString(time,"dd/MM/YYYY"));
-                    List<Cured> curedList = curedRepository.findAllByTimeEqualsAndStatus(time, VariableCommon.CURED);
-                    mapCuredByTime.put(time, curedList.size());
-                    System.out.println(mapCuredByTime);
-                    curedList.clear();
-
-                    List<Sick> sickList = sickRepository.findAllByTimeEqualsAndStatus(time, VariableCommon.SICK);
-                    mapSickByTime.put(time, sickList.size());
-                    sickList.clear();
-
-                    List<Died> diedList = diedRepository.findAllByTimeEquals(time);
-                    mapDiedByTime.put(time, diedList.size());
-                    diedList.clear();
-                });
+                formTime = "dd/MM/yyyy";
+            } else if (timeForm.equals(VariableCommon.MONTH)) {
+                listDate = dateHelper.getDatesBetweenDay(Calendar.MONTH, 12);
+                formTime = "MM/YYYY";
+            } else {
+                listDate = dateHelper.getDatesBetweenDay(Calendar.YEAR, 3);
+                formTime = "YYYY";
             }
-            if (timeForm.equals(VariableCommon.MONTH) || timeForm.equals(VariableCommon.YEAR)) {
-                List<Cured> curedList = new ArrayList<>();
-                List<Sick> sickList = new ArrayList<>();
-                List<Died> diedList = new ArrayList<>();
-                String formTime;
 
-                if (timeForm.equals(VariableCommon.MONTH)) {
-                    listDate = dateHelper.getDatesBetweenDay(Calendar.MONTH, 12);
-                    formTime = "MM/YYYY";
-                } else {
-                    listDate = dateHelper.getDatesBetweenDay(Calendar.YEAR, 3);
-                    formTime = "YYYY";
+            listDate.forEach(time -> {
+
+                String strTime = dateHelper.convertDateToString(time, formTime);
+
+                for (StatusByTime sick : statusByTimeRepository.findAllByStatusAndActiveTrue(VariableCommon.SICK)) {
+                    if (strTime.equals(dateHelper.convertDateToString(sick.getUpdatedAt(), formTime))) {
+                        sickList.add(sick);
+                    }
                 }
-                listDate.forEach(time -> {
+                mapSickByTime.put(time, sickList.size());
+                sickList.clear();
 
-                    String strTime = dateHelper.convertDateToString(time, formTime);
-
-                    for (Cured cured : curedRepository.findAllByStatus(VariableCommon.CURED)) {
-                        if (strTime.equals(dateHelper.convertDateToString(cured.getTime(), formTime))) {
-                            curedList.add(cured);
-                        }
+                for (StatusByTime died : statusByTimeRepository.findAllByStatusAndActiveTrue(VariableCommon.DIED)) {
+                    if (strTime.equals(dateHelper.convertDateToString(died.getUpdatedAt(), formTime))) {
+                        diedList.add(died);
                     }
-                    mapCuredByTime.put(time, curedList.size());
-                    curedList.clear();
+                }
+                mapDiedByTime.put(time, diedList.size());
+                diedList.clear();
 
-                    for (Sick sick : sickRepository.findAllByStatus(VariableCommon.SICK)) {
-                        if (strTime.equals(dateHelper.convertDateToString(sick.getTime(), formTime))) {
-                            sickList.add(sick);
-                        }
+                for (StatusByTime cured : statusByTimeRepository.findAllByStatusAndActiveTrue(VariableCommon.CURED)) {
+                    if (strTime.equals(dateHelper.convertDateToString(cured.getUpdatedAt(), formTime))) {
+                        curedList.add(cured);
                     }
-                    mapSickByTime.put(time, sickList.size());
-                    sickList.clear();
+                }
+                mapCuredByTime.put(time, curedList.size());
+                curedList.clear();
 
-                    for (Died died : diedRepository.findAllByActiveTrue()) {
-                        if (strTime.equals(dateHelper.convertDateToString(died.getTime(), formTime))) {
-                            diedList.add(died);
-                        }
-                    }
-                    mapDiedByTime.put(time, diedList.size());
-                    diedList.clear();
-                });
-            }
+            });
 
             mapByStatus.put(VariableCommon.CURED, mapCuredByTime);
             mapByStatus.put(VariableCommon.SICK, mapSickByTime);
             mapByStatus.put(VariableCommon.DIED, mapDiedByTime);
         }
         return mapByStatus;
+    }
+
+    @Override
+    public List<CountPeopleByStatusAboutProvince> countPeopleByStatusAboutProvince() {
+        List<ICountPeopleByProvince> iCountCuredByProvinces = statusByTimeRepository.listCountPeopleByProvince(VariableCommon.CURED);
+
+        List<CountPeopleByProvince> countPeopleByProvinces = iCountCuredByProvinces.stream()
+                .map(ICountPeopleByProvince::get).collect(Collectors.toList());
+
+
+        return null;
+
+
     }
 }

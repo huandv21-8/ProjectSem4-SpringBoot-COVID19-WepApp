@@ -37,8 +37,8 @@ public class PeopleManagementController {
     @GetMapping("/peopleDetailByStatus")
     public ResponseEntity<PeopleDetailResponseAdmin> peopleDetailByStatus(
             @RequestParam(required = false, name = "status") String status,
-            @RequestParam(required = false, name = "idPeople") Long idPeople) {
-        return status(HttpStatus.OK).body(peopleManagementService.peopleDetailByStatus(status, idPeople));
+            @RequestParam(required = false, name = "idStatusByTime") Long idStatusByTime) {
+        return status(HttpStatus.OK).body(peopleManagementService.peopleDetailByStatus(status, idStatusByTime));
     }
 
     @DeleteMapping("/deletePeopleById/{idPeople}")
@@ -56,6 +56,8 @@ public class PeopleManagementController {
         peopleManagementService.deleteAllPeopleByCheckbox(status, listIdPeopleCheckbox);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+
 
 
 }

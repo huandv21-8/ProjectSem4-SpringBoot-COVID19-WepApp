@@ -1,10 +1,10 @@
 package com.example.footballshopwebapp.controller.admin;
 
 
-import com.example.footballshopwebapp.dto.AuthenticationResponse;
-import com.example.footballshopwebapp.dto.LoginRequest;
+import com.example.footballshopwebapp.dto.response.AuthenticationResponse;
+import com.example.footballshopwebapp.dto.request.LoginRequest;
 import com.example.footballshopwebapp.dto.RefreshTokenRequest;
-import com.example.footballshopwebapp.dto.RegisterRequest;
+import com.example.footballshopwebapp.dto.request.RegisterRequest;
 import com.example.footballshopwebapp.service.AuthService;
 import com.example.footballshopwebapp.service.RefreshTokenService;
 import lombok.AllArgsConstructor;

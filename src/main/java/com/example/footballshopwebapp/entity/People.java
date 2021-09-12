@@ -26,27 +26,23 @@ public class People {
     private String name;
 
     @NonNull
-    private int age;
+    private Date birthDay;
+
     @NonNull
     private boolean gender;
+
+    @Column(unique = true)
     private String phone;
-    @NotBlank(message = "Schedule is required")
-    private String schedule;
+
+    private String  cmt;
 
     @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "provinceId", referencedColumnName = "provinceId")
-    private Province province;
-
-    @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "districtId", referencedColumnName = "districtId")
-    private District district;
-
-    @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "communeId", referencedColumnName = "communeId")
     private Commune commune;
+
+    @NonNull
+    private boolean active;
 
     private Date time;
 

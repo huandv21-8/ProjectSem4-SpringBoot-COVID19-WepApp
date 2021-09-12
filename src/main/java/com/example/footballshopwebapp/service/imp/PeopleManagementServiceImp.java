@@ -17,7 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,13 +29,9 @@ import java.util.stream.Collectors;
 public class PeopleManagementServiceImp implements PeopleManagementService {
 
     private final PeopleRepository peopleRepository;
-    private final SickRepository sickRepository;
     private final CommuneRepository communeRepository;
-    private final DistrictRepository districtRepository;
     private final ProvinceRepository provinceRepository;
-    private final F1Repository f1Repository;
-    private final CuredRepository curedRepository;
-    private final DiedRepository diedRepository;
+    private final StatusByTimeRepository statusByTimeRepository;
     private final PeopleMapper peopleMapper;
     private final PeopleDetailResponseMapper peopleDetailResponseMapper;
     private final DateHelper dateHelper;
@@ -42,43 +41,27 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
     @Transactional
     public Message createPeople(PeopleRequest peopleRequest) throws SpringException {
         try {
-
-            if (peopleRequest.getPhone() == null && !peopleRequest.getPhone().matches("[0-9]+") && peopleRequest.getPhone().length() == 10) {
-                throw new SpringException("SĐT phải là số và đủ 10 số.");
-            }
-
             People people = new People();
             people.setName(peopleRequest.getName());
-            people.setAge(peopleRequest.getAge());
+            people.setBirthDay(peopleRequest.getBirthDay());
             people.setGender(peopleRequest.isGender());
             people.setPhone(peopleRequest.getPhone());
-            people.setSchedule(peopleRequest.getSchedule());
             people.setCommune(communeRepository.findByCommuneId(peopleRequest.getIdCommune()));
-            people.setDistrict(districtRepository.findByDistrictId(peopleRequest.getIdDistrict()));
-            people.setProvince(provinceRepository.findByProvinceId(peopleRequest.getIdProvince()));
             people.setTime(dateHelper.getDateNow());
+            people.setCmt(peopleRequest.getCmt());
+            people.setActive(true);
 
-            if (peopleRequest.getStatus().equals(VariableCommon.SICK)) {
-                Sick sick = new Sick();
-                sick.setPeople(peopleRepository.save(people));
-                sick.setStatus(peopleRequest.getStatus());
-                sick.setTime(dateHelper.getDateNow());
-                sick.setType(peopleRequest.isType());
-                sick.setActive(true);
-                if (peopleRequest.isType()) {
-                    sick.setIdSickSource(peopleRequest.getIdSourced());
-                }
-                sickRepository.save(sick);
-            } else if (peopleRequest.getStatus().equals(VariableCommon.F1)) {
-                F1 f1 = new F1();
-                f1.setPeople(peopleRepository.save(people));
-                f1.setSickSource(sickRepository.findBySickId(peopleRequest.getIdSourced()));
-                f1.setStatus(peopleRequest.getStatus());
-                f1.setType(true);
-                f1.setActive(true);
-                f1.setTime(dateHelper.getDateNow());
-                f1Repository.save(f1);
+            StatusByTime statusByTime = new StatusByTime();
+            statusByTime.setPeople(peopleRepository.save(people));
+            statusByTime.setStatus(peopleRequest.getStatus());
+            statusByTime.setType(peopleRequest.isType());
+            statusByTime.setUpdatedAt(dateHelper.getDateNow());
+            statusByTime.setTravelSchedule(peopleRequest.getSchedule());
+            if (peopleRequest.getIdSourced() != null && (peopleRequest.isType() || peopleRequest.getStatus().equals(VariableCommon.F1))) {
+                statusByTime.setId_source(peopleRequest.getIdSourced());
             }
+            statusByTimeRepository.save(statusByTime);
+
             return new Message("Thanh cong");
         } catch (Exception e) {
             throw new SpringException("sai roi");
@@ -89,72 +72,27 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
     @Override
     public List<PeopleResponseAdmin> getAllPeopleByStatus(String status) {
         List<PeopleResponseAdmin> peopleResponseAdminList = null;
-        if (status.equals(VariableCommon.SICK)) {
-            List<Sick> list1 = sickRepository.listSickByActiveTrue();
-            peopleResponseAdminList = list1.stream().map(sick -> peopleMapper.sickResponseAdminMap(sick)).collect(Collectors.toList());
-        } else if (status.equals(VariableCommon.F1)) {
-            peopleResponseAdminList = f1Repository.listF1ByActiveTrue().stream().map(peopleMapper::f1ResponseAdminMap).collect(Collectors.toList());
-        } else if (status.equals(VariableCommon.CURED)) {
-            peopleResponseAdminList = curedRepository.listCuredByActiveTrue().stream().map(peopleMapper::curedResponseAdminMap).collect(Collectors.toList());
-        } else if (status.equals(VariableCommon.DIED)) {
-            peopleResponseAdminList = diedRepository.findAllByActiveTrue().stream().map(peopleMapper::diedResponseAdminMap).collect(Collectors.toList());
+        if (status != null) {
+            List<StatusByTime> statusByTimeList = statusByTimeRepository.getAllPeopleByStatusWhereActiveTrue(status);
+            peopleResponseAdminList = statusByTimeList.stream().map((statusByTime) -> {
+                String birthDay = dateHelper.convertDateToString(statusByTime.getPeople().getBirthDay(), "dd/MM/yyyy");
+                return peopleMapper.peopleResponseAdminMap(statusByTime, provinceRepository.getProvinceByCommune(statusByTime.getPeople().getCommune().getCommuneId()), birthDay);
+            }).collect(Collectors.toList());
         }
 
         return peopleResponseAdminList;
     }
 
-    @Override
-    public PeopleDetailResponseAdmin peopleDetailByStatus(String status, Long idPeople) {
-        PeopleDetailResponseAdmin peopleDetailResponseAdmin = null;
-        if (status.equals(VariableCommon.SICK)) {
-            Sick sick = sickRepository.findById(idPeople).orElseThrow(() -> new SpringException("Không có người bệnh nào có id là: " + idPeople));
-            peopleDetailResponseAdmin = peopleDetailResponseMapper.sickDetailResponseAdminMap(sick);
-        } else if (status.equals(VariableCommon.F1)) {
-            F1 f1 = f1Repository.findById(idPeople).orElseThrow(() -> new SpringException("Không có người f1 nào có id là: " + idPeople));
-            peopleDetailResponseAdmin = peopleDetailResponseMapper.f1DetailResponseAdminMap(f1);
-        } else if (status.equals(VariableCommon.CURED)) {
-            Cured cured = curedRepository.findById(idPeople).orElseThrow(() -> new SpringException("Không có người bệnh nào đã khỏi có id là: " + idPeople));
-            peopleDetailResponseAdmin = peopleDetailResponseMapper.curedDetailResponseAdminMap(cured);
-        } else if (status.equals(VariableCommon.DIED)) {
-            Died died = diedRepository.findById(idPeople).orElseThrow(() -> new SpringException("Không có người bệnh nào đã khỏi có id là: " + idPeople));
-            peopleDetailResponseAdmin = peopleDetailResponseMapper.diedDetailResponseAdminMap(died);
-        }
-        if (peopleDetailResponseAdmin.getIdSource() != null) {
-            Sick sick = sickRepository.findById(peopleDetailResponseAdmin.getIdSource()).orElseThrow(() -> new SpringException("Không có người bệnh nào có id là: " + idPeople));
-            peopleDetailResponseAdmin.setNameSource(sick.getPeople().getName());
-        }
-        return peopleDetailResponseAdmin;
-    }
 
     @Override
     @Transactional
-    public Message deletePeopleById(String status, Long idPeople) throws SpringException {
-        try {
-            if (status.equals(VariableCommon.SICK)) {
-                Sick sick = sickRepository.findById(idPeople).orElseThrow(() -> new SpringException("Không có người bệnh nào có id là: " + idPeople));
-                sick.setActive(false);
+    public Message deletePeopleById(String status, Long idPeople) {
+        try{
+            Optional<People> people = Optional.ofNullable(peopleRepository.findByPeopleId(idPeople).
+                    orElseThrow(() -> new SpringException("Không có người nào có id là: " + idPeople)));
+            people.get().setActive(false);
+            peopleRepository.save(people.get());
 
-                List<F1> listF1 = f1Repository.findAllBySickSource_SickId(sick.getSickId());
-                if (listF1 != null) {
-                    for (F1 f1 : listF1) {
-                        f1.setActive(false);
-                        f1Repository.save(f1);
-                    }
-                }
-                sickRepository.save(sick);
-            } else if (status.equals(VariableCommon.F1)) {
-                F1 f1 = f1Repository.findById(idPeople).orElseThrow(() -> new SpringException("Không có người f1 nào có id là: " + idPeople));
-                f1.setActive(false);
-                f1Repository.save(f1);
-            } else if (status.equals(VariableCommon.CURED)) {
-                Cured cured = curedRepository.findById(idPeople).orElseThrow(() -> new SpringException("Không có người bệnh nào đã khỏi có id là: " + idPeople));
-                cured.setActive(false);
-                curedRepository.save(cured);
-            } else if (status.equals(VariableCommon.DIED)) {
-                Died died = diedRepository.findById(idPeople).orElseThrow(() -> new SpringException("Không có người bệnh nào đã khỏi có id là: " + idPeople));
-                died.setActive(false);
-                diedRepository.save(died);
-            }
             return new Message("Xóa thành công.");
         } catch (Exception e) {
             throw new SpringException("Lỗi rồi.");
@@ -163,12 +101,54 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
     }
 
     @Override
-    @Transactional
     public Message deleteAllPeopleByCheckbox(String status, List<Long> listIdPeopleCheckbox) {
         for (Long id : listIdPeopleCheckbox) {
             deletePeopleById(status, id);
         }
         return new Message("Xóa thành công.");
+    }
+
+
+    @Override
+    public PeopleDetailResponseAdmin peopleDetailByStatus(String status, Long idStatusByTime) {
+        PeopleDetailResponseAdmin peopleDetailResponseAdmin = null;
+        if (status != null && idStatusByTime != null) {
+            StatusByTime statusByTime = statusByTimeRepository.findByStatusByTimeId(idStatusByTime).get();
+            Province province = provinceRepository.getProvinceByCommune(statusByTime.getPeople().getCommune().getCommuneId());
+            District district = statusByTime.getPeople().getCommune().getDistrict();
+            Commune commune = statusByTime.getPeople().getCommune();
+            String birthDay = dateHelper.convertDateToString(statusByTime.getPeople().getBirthDay(), "dd/MM/yyyy");
+            String updatedAt = dateHelper.convertDateToString(statusByTime.getUpdatedAt(), "dd/MM/yyyy");
+            String namePeopleSource = null;
+            if (statusByTime.getId_source()!= null) {
+                Optional<People> people = Optional.ofNullable(peopleRepository.findByPeopleId(statusByTime.getId_source()).
+                        orElseThrow(() -> new SpringException("Không có người nào có id là: " + statusByTime.getId_source())));
+                if (people != null) {
+                    namePeopleSource = people.get().getName();
+                }
+            }
+            peopleDetailResponseAdmin = peopleDetailResponseMapper.peopleDetailResponseAdminMap(
+                    statusByTime,
+                    province,
+                    district,
+                    commune,
+                    birthDay,
+                    updatedAt,
+                    namePeopleSource);
+        }
+
+        return peopleDetailResponseAdmin;
+    }
+
+
+    @Override
+    public Map<String, Long> staticalTotalPeopleByStatus() {
+        Map<String,Long> totalPeople = new HashMap<>();
+        totalPeople.put(VariableCommon.CURED, (long) statusByTimeRepository.getAllPeopleByStatusWhereActiveTrue(VariableCommon.CURED).size());
+        totalPeople.put(VariableCommon.SICK, (long) statusByTimeRepository.getAllPeopleByStatusWhereActiveTrue(VariableCommon.SICK).size());
+        totalPeople.put(VariableCommon.DIED, (long) statusByTimeRepository.getAllPeopleByStatusWhereActiveTrue(VariableCommon.DIED).size());
+        totalPeople.put(VariableCommon.F1, (long) statusByTimeRepository.getAllPeopleByStatusWhereActiveTrue(VariableCommon.F1).size());
+        return totalPeople;
     }
 
 

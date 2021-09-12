@@ -1,4 +1,4 @@
-package com.example.footballshopwebapp.dto;
+package com.example.footballshopwebapp.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

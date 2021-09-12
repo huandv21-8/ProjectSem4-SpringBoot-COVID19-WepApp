@@ -17,14 +17,14 @@ import java.util.Date;
 public class PeopleDetailResponseAdmin {
     private Long idPeople;
     private String name;
-    private int age;
+    private String birthDay;
     private String phone;
     private boolean gender;
-    private String schedule;
+    private String travelSchedule;
     private String province;
     private String district;
     private String commune;
-    private Date time;
+    private String updatedAt;
     private String status;
     private boolean type;
     private Long idSource;
