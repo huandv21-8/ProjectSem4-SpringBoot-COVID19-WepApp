@@ -64,7 +64,7 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
 
             return new Message("Thanh cong");
         } catch (Exception e) {
-            throw new SpringException("sai roi");
+            throw new SpringException("sai roi "+e.getMessage());
         }
 
     }
@@ -120,7 +120,7 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
             String birthDay = dateHelper.convertDateToString(statusByTime.getPeople().getBirthDay(), "dd/MM/yyyy");
             String updatedAt = dateHelper.convertDateToString(statusByTime.getUpdatedAt(), "dd/MM/yyyy");
             String namePeopleSource = null;
-            if (statusByTime.getId_source()!= null) {
+            if (statusByTime.getId_source()!= null && statusByTime.getId_source()!= 0) {
                 Optional<People> people = Optional.ofNullable(peopleRepository.findByPeopleId(statusByTime.getId_source()).
                         orElseThrow(() -> new SpringException("Không có người nào có id là: " + statusByTime.getId_source())));
                 if (people != null) {

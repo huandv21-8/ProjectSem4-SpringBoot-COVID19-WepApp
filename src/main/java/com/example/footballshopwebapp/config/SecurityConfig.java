@@ -40,6 +40,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers("/v1/sms/**")
                 .permitAll()
+                .antMatchers("/v1/declare/**")
+                .permitAll()
 //                .antMatchers(HttpMethod.POST, "/api/posts/").hasRole("ADMIN")
                 .anyRequest()  // Tất cả các request khác đều cần phải xác thực mới được truy cập
                 .authenticated();

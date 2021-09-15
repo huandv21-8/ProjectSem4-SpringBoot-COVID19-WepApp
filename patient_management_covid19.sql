@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 20, 2021 at 02:12 PM
+-- Generation Time: Sep 14, 2021 at 11:24 AM
 -- Server version: 10.4.14-MariaDB
 -- PHP Version: 7.4.9
 
@@ -18,8 +18,27 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `patient_management_covid19`
+-- Database: `patient_management_covid19_v1`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `account`
+--
+
+CREATE TABLE `account` (
+  `account_id` bigint(20) NOT NULL,
+  `active` bit(1) NOT NULL,
+  `address` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `birth_day` datetime(6) DEFAULT NULL,
+  `cmt` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `gender` bit(1) NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time` datetime(6) DEFAULT NULL,
+  `commune_id` bigint(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -10653,42 +10672,6 @@ INSERT INTO `commune` (`commune_id`, `commune_name`, `type`, `district_id`) VALU
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cured`
---
-
-CREATE TABLE `cured` (
-  `cured_id` bigint(20) NOT NULL,
-  `status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `time` date DEFAULT NULL,
-  `type` bit(1) NOT NULL,
-  `people_id` bigint(20) DEFAULT NULL,
-  `active` bit(1) NOT NULL,
-  `id_sick_source` bigint(20) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `cured`
---
-
-INSERT INTO `cured` (`cured_id`, `status`, `time`, `type`, `people_id`, `active`, `id_sick_source`) VALUES
-(10, 'f1', '2021-07-11', b'0', 1, b'1', NULL),
-(11, 'cured', '2021-06-17', b'1', 8, b'1', 3),
-(17, 'sick', '2021-07-11', b'1', 8, b'1', 3),
-(19, 'f1', '2021-07-11', b'1', 9, b'1', 1),
-(21, 'cured', '2021-05-11', b'1', 10, b'1', 1),
-(22, 'f1', '2021-07-11', b'1', 10, b'1', 1),
-(23, 'cured', '2021-05-11', b'1', 8, b'1', 3),
-(24, 'f1', '2021-07-11', b'1', 8, b'1', 3),
-(25, 'cured', '2021-04-11', b'1', 11, b'1', 2),
-(26, 'cured', '2021-07-11', b'1', 12, b'1', 3),
-(27, 'sick', '2021-07-11', b'1', 12, b'1', 3),
-(28, 'f1', '2021-07-11', b'1', 11, b'1', 2),
-(29, 'cured', '2021-03-17', b'0', 4, b'1', NULL),
-(30, 'cured', '2021-07-17', b'1', 14, b'1', 3);
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `district`
 --
 
@@ -11413,81 +11396,33 @@ INSERT INTO `district` (`district_id`, `district_name`, `type`, `province_id`) V
 -- --------------------------------------------------------
 
 --
--- Table structure for table `f1`
---
-
-CREATE TABLE `f1` (
-  `f1id` bigint(20) NOT NULL,
-  `status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `time` date DEFAULT NULL,
-  `people_id` bigint(20) DEFAULT NULL,
-  `sick_id` bigint(20) DEFAULT NULL,
-  `type` bit(1) NOT NULL,
-  `active` bit(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `f1`
---
-
-INSERT INTO `f1` (`f1id`, `status`, `time`, `people_id`, `sick_id`, `type`, `active`) VALUES
-(17, 'f1', '2021-07-11', 4, NULL, b'0', b'1'),
-(18, 'f1', '2021-07-11', 7, NULL, b'0', b'1'),
-(22, 'sick', '2021-07-11', 4, NULL, b'0', b'1'),
-(23, 'sick', '2021-07-11', 7, NULL, b'0', b'1'),
-(24, 'f1', '2021-07-11', 7, NULL, b'0', b'1'),
-(25, 'f1', '2021-07-11', 4, NULL, b'0', b'1'),
-(28, 'f1', '2021-07-11', 10, 1, b'1', b'1'),
-(29, 'f1', '2021-07-11', 8, 3, b'1', b'1'),
-(30, 'sick', '2021-07-11', 8, 3, b'1', b'1'),
-(31, 'sick', '2021-07-11', 10, 1, b'1', b'1'),
-(32, 'sick', '2021-07-11', 4, NULL, b'0', b'1'),
-(33, 'sick', '2021-07-11', 7, NULL, b'0', b'1'),
-(34, 'f1', '2021-07-11', 14, 2, b'1', b'1'),
-(35, 'f1', '2021-07-11', 8, NULL, b'1', b'1'),
-(36, 'f1', '2021-07-11', 10, NULL, b'1', b'1'),
-(37, 'sick', '2021-07-11', 14, 2, b'1', b'1'),
-(38, 'f1', '2021-07-11', 11, 2, b'1', b'1');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `people`
 --
 
 CREATE TABLE `people` (
   `people_id` bigint(20) NOT NULL,
-  `age` int(11) NOT NULL,
+  `active` bit(1) NOT NULL,
+  `birth_day` datetime(6) DEFAULT NULL,
+  `cmt` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `gender` bit(1) NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `schedule` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `time` datetime(6) DEFAULT NULL,
-  `commune_id` bigint(20) DEFAULT NULL,
-  `district_id` bigint(20) DEFAULT NULL,
-  `province_id` bigint(20) DEFAULT NULL
+  `commune_id` bigint(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `people`
 --
 
-INSERT INTO `people` (`people_id`, `age`, `gender`, `name`, `phone`, `schedule`, `time`, `commune_id`, `district_id`, `province_id`) VALUES
-(1, 221, b'0', 'huan', '0963456741', 'abc', '2021-06-13 16:01:48.000000', 1, 1, 1),
-(2, 221, b'0', 'huan', '0963456741', 'abc', '2021-06-13 16:02:43.000000', 1, 1, 1),
-(3, 1, b'1', 'a', '0355882001', 'f1', '2021-06-13 16:03:22.000000', 1, 1, 1),
-(4, 19, b'1', 'Quý', '0963456741', 'giúc ở nhà', '2021-06-13 16:13:38.000000', NULL, 3, 2),
-(5, 21, b'1', 'Phương', '0963456741', 'f1', '2021-06-13 16:15:52.000000', 1, 1, 1),
-(6, 17, b'0', 'Huyền', '1234567890', 'avc', '2021-06-13 16:22:07.000000', 1, 1, 1),
-(7, 21, b'1', 'Đỗ Văn Huấn', '0966469746', 'ko di đâu', '2021-06-13 16:23:43.000000', NULL, 1, 1),
-(8, 14, b'1', 'Hiển', '0963456741', 'ds', '2021-06-13 17:07:02.000000', 1, 1, 1),
-(9, 12, b'1', 'long long lon ăn cut', '0355882001', 'cx', '2021-06-13 17:08:44.000000', 1, 1, 1),
-(10, 32, b'1', 'abc', '0355882001', 'fvc', '2021-06-13 17:10:10.000000', 1, 1, 1),
-(11, 40, b'1', 'Phạm Huy Hoàng', '4536475687', 'dfg', '2021-06-14 19:27:15.000000', 1, 1, 1),
-(12, 12, b'1', 'Đỗ Anh Thế', '0963456741', 'Ăn rồi ngồi chơi', '2021-06-16 17:53:18.000000', NULL, 1, NULL),
-(13, 7, b'0', 'x', '0963456741', 'a', '2021-06-17 00:00:00.000000', 1, 3, NULL),
-(14, 9, b'0', 'Trần Duy Hoàng', '', 'ko di đau cả', '2021-06-17 00:00:00.000000', 1, 3, 2),
-(15, 21, b'1', 'huan', '0966469746', 'abc', '2021-07-19 16:23:20.000000', 61, 2, 1);
+INSERT INTO `people` (`people_id`, `active`, `birth_day`, `cmt`, `gender`, `name`, `phone`, `time`, `commune_id`) VALUES
+(7, b'1', '2001-03-07 07:00:00.000000', '', b'1', 'Đỗ Văn Huấn', '0966469746', '2021-09-11 14:39:44.000000', 7885),
+(8, b'1', '2021-09-02 07:00:00.000000', '127346754', b'1', 'Phí Văn Long', '0355882001', '2021-09-11 14:43:12.000000', 6808),
+(9, b'1', '2021-08-29 07:00:00.000000', '', b'1', 'Lê Văn Phương', '0963456741', '2021-09-11 14:51:20.000000', 16492),
+(10, b'1', '2021-08-12 07:00:00.000000', '', b'1', 'Trần Đình Quý', '0964752565', '2021-09-11 14:57:59.000000', 10591),
+(11, b'1', '2002-09-12 07:00:00.000000', '', b'1', 'Đỗ Văn Hiển', '0256975217', '2021-09-12 14:39:44.000000', 7885),
+(12, b'1', '2021-09-13 07:00:00.000000', '', b'1', 'Dỗ Văn Hiển', '0966469745', '2021-09-13 18:15:52.000000', 9178),
+(15, b'1', '2021-09-13 07:00:00.000000', '', b'1', 'abc', '0966469747', '2021-09-13 18:38:11.000000', 8740);
 
 -- --------------------------------------------------------
 
@@ -11574,6 +11509,38 @@ INSERT INTO `province` (`province_id`, `province_name`, `slug`, `type`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `question`
+--
+
+CREATE TABLE `question` (
+  `question_id` bigint(20) NOT NULL,
+  `high_blood_pressure` bit(1) NOT NULL,
+  `cancer` bit(1) NOT NULL,
+  `chronic_blood_disease` bit(1) NOT NULL,
+  `chronic_kidey_disease` bit(1) NOT NULL,
+  `chronic_liver_disease` bit(1) NOT NULL,
+  `chronic_lung_disease` bit(1) NOT NULL,
+  `come_back_from_epidemic_area` bit(1) NOT NULL,
+  `contact_with_people_returning_from_epidemic_areas` bit(1) NOT NULL,
+  `cough` bit(1) NOT NULL,
+  `diabetes` bit(1) NOT NULL,
+  `exposure_tof0` bit(1) NOT NULL,
+  `fever` bit(1) NOT NULL,
+  `heart_related_diseaes` bit(1) NOT NULL,
+  `hiv_or_immunocompromised` bit(1) NOT NULL,
+  `organ_transplant_recipient` bit(1) NOT NULL,
+  `pneumonia` bit(1) NOT NULL,
+  `pregnant` bit(1) NOT NULL,
+  `shortness_of_breath` bit(1) NOT NULL,
+  `sore_throat` bit(1) NOT NULL,
+  `tired` bit(1) NOT NULL,
+  `travel_schedule` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `account_id` bigint(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `refresh_token`
 --
 
@@ -11588,52 +11555,19 @@ CREATE TABLE `refresh_token` (
 --
 
 INSERT INTO `refresh_token` (`id`, `created_date`, `token`) VALUES
-(1, '2021-06-13 15:58:02.000000', 'db96a491-10c9-4398-a1e6-1dbf75cdaeaf'),
-(2, '2021-06-13 16:01:21.000000', '94257f82-ca11-449d-9727-dbd611ad6f2c'),
-(3, '2021-06-13 17:17:50.000000', '1a32acea-6e47-4145-a853-075a7656b29f'),
-(4, '2021-06-14 09:22:21.000000', 'f1461446-a374-496c-84a6-7376ceeccf82'),
-(5, '2021-06-14 14:35:05.000000', 'd31d7d4b-4e48-46ca-8fa3-87151ea55755'),
-(6, '2021-06-14 17:05:46.000000', '4224b853-d13e-4d1a-bb5a-21766829c64b'),
-(7, '2021-06-14 19:43:54.000000', '698ef21b-4b48-417e-abcf-ca717ffb147c'),
-(8, '2021-06-15 10:58:21.000000', '9a4d9342-4195-4657-a400-1eae8065f0ab'),
-(9, '2021-06-15 14:13:24.000000', '1725c694-d292-4ca7-99af-4e5fc6c70317'),
-(10, '2021-06-15 16:43:59.000000', '2ecb7b22-b525-4365-8a49-15278e5f31fe'),
-(11, '2021-06-15 22:04:52.000000', '396296d1-01f3-410b-b2fb-487fb5317d93'),
-(12, '2021-06-16 16:01:29.000000', 'ef3c81ee-6d40-4786-9600-4b0b02849c9a'),
-(13, '2021-06-17 09:07:37.000000', '045655d2-6b0b-46cd-b392-40b1910f288c'),
-(14, '2021-06-17 11:38:10.000000', '86ad48ca-0a0b-48e0-ac17-d0c27afcfc2d'),
-(15, '2021-06-17 14:17:59.000000', 'ff7465c5-24af-4c54-a696-0f3fcc50abf7'),
-(16, '2021-06-17 14:19:06.000000', 'f430b6bb-4f10-4964-b3a9-227b73e82a60'),
-(17, '2021-06-17 16:51:28.000000', 'c539b341-cffc-4e17-833f-58e74e8905a8'),
-(18, '2021-06-18 07:50:57.000000', '03eca8be-e30e-426e-8117-f7401f8ed56a'),
-(19, '2021-06-18 07:50:58.000000', 'b74739af-4f47-4984-b71e-474fd29f886b'),
-(20, '2021-06-18 10:23:09.000000', 'f98b2e4f-df5b-4158-bd78-16312596925d'),
-(21, '2021-06-18 15:49:33.000000', '294dd7df-0dcf-4d57-90ad-84359ca116f5'),
-(22, '2021-06-18 18:23:38.000000', '6824a761-4c37-4d16-b104-2f895b6d89da'),
-(23, '2021-06-19 09:14:20.000000', '163fa9a9-0a4d-4d2f-a0c8-6fd4fbf96840'),
-(24, '2021-06-20 11:28:31.000000', 'b181907b-a962-4fcf-8242-c97fb2e1e5b9'),
-(25, '2021-07-09 11:36:23.000000', '2ae72076-42d0-4ae3-957c-f57d78d7ba51'),
-(26, '2021-07-09 14:18:19.000000', 'e59dbae5-0b48-494e-b6ec-436610342a06'),
-(27, '2021-07-09 21:37:54.000000', '624b3f1e-9fc5-490a-b04c-0a9fa0c43e03'),
-(28, '2021-07-10 09:38:26.000000', 'da3bb64a-afd4-4c62-9e72-07ab3b272f3b'),
-(29, '2021-07-10 20:44:05.000000', 'eec665f1-cd88-43ac-ad10-1184e2b790bd'),
-(30, '2021-07-11 09:45:46.000000', '4f0bf4fc-44ea-4765-969c-adf1302bbb42'),
-(31, '2021-07-11 13:49:55.000000', 'db85452b-b04a-4cc5-ab65-b7bc5d02e956'),
-(32, '2021-07-11 21:15:44.000000', '95292fff-ca4c-4584-b2b0-fa0842054311'),
-(33, '2021-07-13 15:12:48.000000', 'b2d8e2fc-f9bb-4e61-966d-4d8bd2a71446'),
-(34, '2021-07-13 15:13:14.000000', 'dfb12266-fd7c-4fb3-84aa-f22433d484c8'),
-(35, '2021-07-13 15:50:24.000000', 'e942642d-4f95-4182-8bf0-2bc2839e3c37'),
-(36, '2021-07-13 15:51:06.000000', '57d25052-5124-4fa1-a7f0-b12973694eca'),
-(37, '2021-07-16 14:09:10.000000', 'e24fd1a7-f81a-48c9-b8c0-47f6fc595403'),
-(38, '2021-07-17 09:44:14.000000', '82b6d59a-a357-48ca-b1f8-8b77ea9e81c2'),
-(39, '2021-07-17 13:00:58.000000', '34ad4886-4509-447d-b05a-55070439e89f'),
-(40, '2021-07-17 15:35:59.000000', 'd705cc71-e73c-4707-a8c7-9a9c96f8351f'),
-(41, '2021-07-18 08:39:26.000000', '8987cd75-c831-4205-9f08-696367807515'),
-(42, '2021-07-19 16:14:26.000000', 'e7ad6e04-8d7b-4724-98b7-a174295f8c86'),
-(43, '2021-07-20 07:35:54.000000', 'dfd12037-cd8f-4c97-b05d-0419307c6482'),
-(44, '2021-07-20 07:39:25.000000', 'dfdac2a6-7232-4bfe-909d-1a0b91b50894'),
-(45, '2021-07-20 10:56:40.000000', '592156bb-036a-43ea-b19e-e45d0b62143e'),
-(46, '2021-07-20 14:53:14.000000', '63914a76-9ca4-4fbf-8be9-d3ba64f767c3');
+(1, '2021-09-11 10:29:40.000000', '98fee954-c16d-4e19-a1b8-fa51ccbcde2d'),
+(2, '2021-09-11 14:30:12.000000', 'c8e0c385-0f40-42a5-82eb-4788a98cad70'),
+(3, '2021-09-11 17:08:17.000000', 'b3512198-2ef6-46c5-b3d3-08b954917758'),
+(4, '2021-09-11 23:34:03.000000', '2b4e32dd-c2e9-427e-853b-dee4251d7d01'),
+(5, '2021-09-11 23:48:46.000000', 'e75aa183-bbfc-45c0-94d8-8b5579da6f58'),
+(6, '2021-09-12 07:21:22.000000', '9d2afe20-cc31-42a9-b7f9-c4ab54126c07'),
+(7, '2021-09-12 14:41:47.000000', '54d6a768-95e4-4fe7-bfde-96d604601292'),
+(8, '2021-09-12 22:09:53.000000', 'ebc7cd5a-31ee-41d9-8ea2-bd3ec838d32b'),
+(9, '2021-09-13 18:02:03.000000', '388f1a29-2047-45d1-83dc-4b4f9b460716'),
+(10, '2021-09-13 18:02:21.000000', '4ef55a13-49c1-4c26-86ae-8b443166b291'),
+(11, '2021-09-13 18:20:51.000000', '6ca9d8fd-6075-4e14-8399-0ffda4eb654b'),
+(12, '2021-09-14 09:39:56.000000', '36a1a3e1-70c8-4acf-bb78-6dde094fe885'),
+(13, '2021-09-14 13:58:48.000000', '37b9d3e3-0a75-4c2c-8854-c22d71e92174');
 
 -- --------------------------------------------------------
 
@@ -11656,61 +11590,57 @@ INSERT INTO `role` (`role_id`, `role_name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `sick`
+-- Table structure for table `situation`
 --
 
-CREATE TABLE `sick` (
-  `sick_id` bigint(20) NOT NULL,
-  `id_sick_source` bigint(20) DEFAULT NULL,
+CREATE TABLE `situation` (
+  `situation_id` bigint(20) NOT NULL,
+  `active` bit(1) NOT NULL,
+  `content` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` datetime(6) DEFAULT NULL,
+  `updated_at` datetime(6) DEFAULT NULL,
+  `user_id` bigint(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `status_by_time`
+--
+
+CREATE TABLE `status_by_time` (
+  `status_by_time_id` bigint(20) NOT NULL,
+  `id_source` bigint(20) DEFAULT NULL,
   `status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `time` date DEFAULT NULL,
+  `travel_schedule` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `type` bit(1) NOT NULL,
-  `people_id` bigint(20) DEFAULT NULL,
-  `active` bit(1) NOT NULL
+  `updated_at` datetime(6) DEFAULT NULL,
+  `people_id` bigint(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `sick`
+-- Dumping data for table `status_by_time`
 --
 
-INSERT INTO `sick` (`sick_id`, `id_sick_source`, `status`, `time`, `type`, `people_id`, `active`) VALUES
-(1, NULL, 'sick', '2021-06-13', b'0', 1, b'1'),
-(2, 3, 'sick', '2021-06-13', b'1', 2, b'1'),
-(3, NULL, 'sick', '2021-07-09', b'0', 4, b'1'),
-(4, 3, 'sick', '2021-06-13', b'1', 8, b'1'),
-(5, NULL, 'sick', '2021-06-13', b'0', 7, b'1'),
-(7, 1, 'sick', '2021-06-17', b'1', 9, b'1'),
-(8, 1, 'sick', '2021-06-17', b'1', 10, b'1'),
-(9, 2, 'sick', '2021-06-14', b'1', 11, b'1'),
-(10, 3, 'sick', '2021-06-16', b'1', 12, b'1'),
-(12, 2, 'sick', '2021-06-17', b'1', 14, b'1'),
-(35, NULL, 'cured', '2021-07-11', b'0', 1, b'1'),
-(36, 3, 'cured', '2021-07-11', b'1', 2, b'1'),
-(37, NULL, 'f1', '2021-07-11', b'0', 4, b'1'),
-(38, 3, 'cured', '2021-07-11', b'1', 8, b'1'),
-(39, NULL, 'f1', '2021-07-11', b'0', 7, b'1'),
-(40, NULL, 'sick', '2021-07-11', b'0', 4, b'1'),
-(41, NULL, 'sick', '2021-07-11', b'0', 7, b'1'),
-(42, NULL, 'f1', '2021-07-11', b'0', 7, b'1'),
-(43, NULL, 'f1', '2021-07-11', b'0', 4, b'1'),
-(49, 3, 'sick', '2021-07-11', b'1', 8, b'1'),
-(50, 1, 'cured', '2021-07-11', b'1', 9, b'1'),
-(51, 1, 'cured', '2021-07-11', b'1', 10, b'1'),
-(52, 3, 'cured', '2021-07-11', b'1', 8, b'1'),
-(53, NULL, 'sick', '2021-07-11', b'1', 8, b'1'),
-(54, NULL, 'sick', '2021-07-11', b'1', 10, b'1'),
-(55, NULL, 'sick', '2021-07-11', b'0', 4, b'1'),
-(56, 2, 'cured', '2021-07-11', b'1', 11, b'1'),
-(57, 3, 'cured', '2021-07-11', b'1', 12, b'1'),
-(58, 3, 'sick', '2021-07-11', b'1', 12, b'1'),
-(59, NULL, 'sick', '2021-07-11', b'0', 7, b'1'),
-(60, 2, 'f1', '2021-07-11', b'1', 14, b'1'),
-(61, NULL, 'f1', '2021-07-11', b'1', 8, b'1'),
-(62, NULL, 'f1', '2021-07-11', b'1', 10, b'1'),
-(63, 3, 'sick', '2021-07-11', b'1', 14, b'1'),
-(64, NULL, 'cured', '2021-07-17', b'0', 4, b'1'),
-(65, 3, 'cured', '2021-07-17', b'1', 14, b'1'),
-(66, NULL, 'sick', '2021-07-19', b'0', 15, b'1');
+INSERT INTO `status_by_time` (`status_by_time_id`, `id_source`, `status`, `travel_schedule`, `type`, `updated_at`, `people_id`) VALUES
+(1, NULL, 'sick', '', b'0', '2021-09-11 14:39:44.000000', 7),
+(2, NULL, 'f1', 'tối nào cũng đi hat karaoke ', b'0', '2021-09-11 14:43:12.000000', 8),
+(3, 7, 'sick', '', b'1', '2021-09-11 14:51:20.000000', 9),
+(4, 8, 'f1', '', b'0', '2021-09-11 14:57:59.000000', 10),
+(5, 8, 'sick', '', b'1', '2021-09-11 15:55:20.581000', 9),
+(6, NULL, 'cured', '', b'0', '2021-08-16 07:38:52.000000', 7),
+(7, NULL, 'sick', 'tối nào cũng đi hat karaoke ', b'0', '2021-09-12 08:13:17.000000', 8),
+(8, NULL, 'sick', '', b'0', '2021-09-12 08:13:29.000000', 7),
+(9, NULL, 'died', 'tối nào cũng đi hat karaoke ', b'0', '2021-09-12 08:13:40.000000', 8),
+(10, NULL, 'cured', '', b'0', '2021-08-13 08:13:51.000000', 7),
+(11, NULL, 'f1', '', b'0', '2021-09-12 08:13:57.000000', 7),
+(12, 7, 'f1', '', b'1', '2021-09-12 08:13:57.000000', 9),
+(13, 7, 'sick', '', b'1', '2021-09-12 08:14:04.000000', 9),
+(14, 8, 'sick', '', b'0', '2021-09-12 08:14:04.000000', 10),
+(15, 8, 'sick', '', b'0', '2021-09-12 08:14:04.000000', 11),
+(16, 7, 'cured', '', b'1', '2021-09-13 18:02:46.000000', 9),
+(17, 0, 'sick', '', b'1', '2021-09-13 18:15:52.000000', 12),
+(18, NULL, 'sick', '', b'0', '2021-09-13 18:38:11.000000', 15);
 
 -- --------------------------------------------------------
 
@@ -11724,13 +11654,6 @@ CREATE TABLE `token` (
   `token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `user_user_id` bigint(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `token`
---
-
-INSERT INTO `token` (`id`, `expiry_date`, `token`, `user_user_id`) VALUES
-(1, NULL, '0bfccd0e-7998-4ffd-9736-19cd1372c3a8', 1);
 
 -- --------------------------------------------------------
 
@@ -11760,18 +11683,19 @@ INSERT INTO `user` (`user_id`, `email`, `enabled`, `password`, `phone`, `usernam
 --
 
 --
+-- Indexes for table `account`
+--
+ALTER TABLE `account`
+  ADD PRIMARY KEY (`account_id`),
+  ADD UNIQUE KEY `UK_dgdnj692f2g5ebicy1xyc2l3w` (`phone`),
+  ADD KEY `FKdryhykxtwt51pr4lsweh5o0lr` (`commune_id`);
+
+--
 -- Indexes for table `commune`
 --
 ALTER TABLE `commune`
   ADD PRIMARY KEY (`commune_id`),
   ADD KEY `FKjhf1rxvyl4a736j0xjyuqywdr` (`district_id`);
-
---
--- Indexes for table `cured`
---
-ALTER TABLE `cured`
-  ADD PRIMARY KEY (`cured_id`),
-  ADD KEY `FKlxoy5m8ccvkiy783mxb7d6601` (`people_id`);
 
 --
 -- Indexes for table `district`
@@ -11781,27 +11705,25 @@ ALTER TABLE `district`
   ADD KEY `FK276utu38g5lgqeth6pwfm3rw2` (`province_id`);
 
 --
--- Indexes for table `f1`
---
-ALTER TABLE `f1`
-  ADD PRIMARY KEY (`f1id`),
-  ADD KEY `FKsv0cpj8rbu3c448jdq2lurgcw` (`people_id`),
-  ADD KEY `FKk5v42pxoi8rkbbkmw0diwt7uq` (`sick_id`);
-
---
 -- Indexes for table `people`
 --
 ALTER TABLE `people`
   ADD PRIMARY KEY (`people_id`),
-  ADD KEY `FKay15fjn32u2f3twp12ot521qq` (`commune_id`),
-  ADD KEY `FKecowwk62cgt9t8tvrhtkf0c8h` (`district_id`),
-  ADD KEY `FKk4m58wrtg1mlp4iggn188pd7r` (`province_id`);
+  ADD UNIQUE KEY `UK_blstj8vogbsqx62ihrx65eu6d` (`phone`),
+  ADD KEY `FKay15fjn32u2f3twp12ot521qq` (`commune_id`);
 
 --
 -- Indexes for table `province`
 --
 ALTER TABLE `province`
   ADD PRIMARY KEY (`province_id`);
+
+--
+-- Indexes for table `question`
+--
+ALTER TABLE `question`
+  ADD PRIMARY KEY (`question_id`),
+  ADD KEY `FKild9tw2tjrblp52ks1l7od2s6` (`account_id`);
 
 --
 -- Indexes for table `refresh_token`
@@ -11816,11 +11738,18 @@ ALTER TABLE `role`
   ADD PRIMARY KEY (`role_id`);
 
 --
--- Indexes for table `sick`
+-- Indexes for table `situation`
 --
-ALTER TABLE `sick`
-  ADD PRIMARY KEY (`sick_id`),
-  ADD KEY `FK7ma9kwf0qkh49vnnprk6bdrf5` (`people_id`);
+ALTER TABLE `situation`
+  ADD PRIMARY KEY (`situation_id`),
+  ADD KEY `FK5otabiu6xjj60u231rrq6ov7b` (`user_id`);
+
+--
+-- Indexes for table `status_by_time`
+--
+ALTER TABLE `status_by_time`
+  ADD PRIMARY KEY (`status_by_time_id`),
+  ADD KEY `FK8p8ro29rciy42ekupkpkt7l5k` (`people_id`);
 
 --
 -- Indexes for table `token`
@@ -11841,28 +11770,22 @@ ALTER TABLE `user`
 --
 
 --
+-- AUTO_INCREMENT for table `account`
+--
+ALTER TABLE `account`
+  MODIFY `account_id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `commune`
 --
 ALTER TABLE `commune`
   MODIFY `commune_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32249;
 
 --
--- AUTO_INCREMENT for table `cured`
---
-ALTER TABLE `cured`
-  MODIFY `cured_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
-
---
 -- AUTO_INCREMENT for table `district`
 --
 ALTER TABLE `district`
   MODIFY `district_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=974;
-
---
--- AUTO_INCREMENT for table `f1`
---
-ALTER TABLE `f1`
-  MODIFY `f1id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `people`
@@ -11877,10 +11800,16 @@ ALTER TABLE `province`
   MODIFY `province_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
 
 --
+-- AUTO_INCREMENT for table `question`
+--
+ALTER TABLE `question`
+  MODIFY `question_id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `refresh_token`
 --
 ALTER TABLE `refresh_token`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `role`
@@ -11889,16 +11818,22 @@ ALTER TABLE `role`
   MODIFY `role_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `sick`
+-- AUTO_INCREMENT for table `situation`
 --
-ALTER TABLE `sick`
-  MODIFY `sick_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
+ALTER TABLE `situation`
+  MODIFY `situation_id` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `status_by_time`
+--
+ALTER TABLE `status_by_time`
+  MODIFY `status_by_time_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `token`
 --
 ALTER TABLE `token`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `user`
@@ -11911,16 +11846,16 @@ ALTER TABLE `user`
 --
 
 --
+-- Constraints for table `account`
+--
+ALTER TABLE `account`
+  ADD CONSTRAINT `FKdryhykxtwt51pr4lsweh5o0lr` FOREIGN KEY (`commune_id`) REFERENCES `commune` (`commune_id`);
+
+--
 -- Constraints for table `commune`
 --
 ALTER TABLE `commune`
   ADD CONSTRAINT `FKjhf1rxvyl4a736j0xjyuqywdr` FOREIGN KEY (`district_id`) REFERENCES `district` (`district_id`);
-
---
--- Constraints for table `cured`
---
-ALTER TABLE `cured`
-  ADD CONSTRAINT `FKlxoy5m8ccvkiy783mxb7d6601` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`);
 
 --
 -- Constraints for table `district`
@@ -11929,25 +11864,28 @@ ALTER TABLE `district`
   ADD CONSTRAINT `FK276utu38g5lgqeth6pwfm3rw2` FOREIGN KEY (`province_id`) REFERENCES `province` (`province_id`);
 
 --
--- Constraints for table `f1`
---
-ALTER TABLE `f1`
-  ADD CONSTRAINT `FKk5v42pxoi8rkbbkmw0diwt7uq` FOREIGN KEY (`sick_id`) REFERENCES `sick` (`sick_id`),
-  ADD CONSTRAINT `FKsv0cpj8rbu3c448jdq2lurgcw` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`);
-
---
 -- Constraints for table `people`
 --
 ALTER TABLE `people`
-  ADD CONSTRAINT `FKay15fjn32u2f3twp12ot521qq` FOREIGN KEY (`commune_id`) REFERENCES `commune` (`commune_id`),
-  ADD CONSTRAINT `FKecowwk62cgt9t8tvrhtkf0c8h` FOREIGN KEY (`district_id`) REFERENCES `district` (`district_id`),
-  ADD CONSTRAINT `FKk4m58wrtg1mlp4iggn188pd7r` FOREIGN KEY (`province_id`) REFERENCES `province` (`province_id`);
+  ADD CONSTRAINT `FKay15fjn32u2f3twp12ot521qq` FOREIGN KEY (`commune_id`) REFERENCES `commune` (`commune_id`);
 
 --
--- Constraints for table `sick`
+-- Constraints for table `question`
 --
-ALTER TABLE `sick`
-  ADD CONSTRAINT `FK7ma9kwf0qkh49vnnprk6bdrf5` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`);
+ALTER TABLE `question`
+  ADD CONSTRAINT `FKild9tw2tjrblp52ks1l7od2s6` FOREIGN KEY (`account_id`) REFERENCES `account` (`account_id`);
+
+--
+-- Constraints for table `situation`
+--
+ALTER TABLE `situation`
+  ADD CONSTRAINT `FK5otabiu6xjj60u231rrq6ov7b` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`);
+
+--
+-- Constraints for table `status_by_time`
+--
+ALTER TABLE `status_by_time`
+  ADD CONSTRAINT `FK8p8ro29rciy42ekupkpkt7l5k` FOREIGN KEY (`people_id`) REFERENCES `people` (`people_id`);
 
 --
 -- Constraints for table `token`

@@ -34,7 +34,6 @@ public class StatisticalPeopleController {
     }
 
 
-
     @GetMapping("/countPeopleByStatusAboutProvince")
     public List<CountPeopleByStatusAboutProvince> countPeopleByStatusAboutProvince(){
         return statisticalPeopleService.countPeopleByStatusAboutProvince();
