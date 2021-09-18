@@ -20,7 +20,7 @@ import javax.mail.Store;
 public class SmsService {
     private final String ACCOUNT_SID = "ACec76cbdb19b31d8d747439c756e04032";
 
-    private final String AUTH_TOKEN = "07b707319125d0955e664b4d6651157b";
+    private final String AUTH_TOKEN = "a975f8c473cbc1ce882fbf9d9a2b9b3c";
 
     private final String FROM_NUMBER = "+13853991793";
 
@@ -33,10 +33,10 @@ public class SmsService {
         int number = (int) (Math.random() * (max - min + 1) + min);
 
 
-        String msg = "Your OTP - " + number + " please verify this OTP in your Application by Er Prince kumar Technoidentity.com";
+        String msg = "Your OTP - " + number + ". Please verify this OTP in the app";
 
 
-        Message message = Message.creator(new PhoneNumber(sms.getTo()), new PhoneNumber(FROM_NUMBER), msg)
+       Message.creator(new PhoneNumber(sms.getPhone()), new PhoneNumber(FROM_NUMBER), msg)
                 .create();
 
         StoreOtp.setOtp(number);

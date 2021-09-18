@@ -1,13 +1,13 @@
 package com.example.footballshopwebapp.dto;
 
 public class SmsPojo {
-    private String to;
+    private String phone;
 
 
-    public String getTo() {
-        return to;
+    public String getPhone() {
+        return phone;
     }
-    public void setTo(String to) {
-        this.to = to;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 }

@@ -2,7 +2,9 @@ package com.example.footballshopwebapp.controller.admin;
 
 import com.example.footballshopwebapp.dto.request.DeclareRequest;
 import com.example.footballshopwebapp.dto.request.SituationRequest;
+import com.example.footballshopwebapp.dto.response.AccountResponse;
 import com.example.footballshopwebapp.dto.response.PeopleDetailResponseAdmin;
+import com.example.footballshopwebapp.entity.Account;
 import com.example.footballshopwebapp.service.DeclareManagementService;
 import com.example.footballshopwebapp.share.Message;
 import lombok.AllArgsConstructor;
@@ -19,10 +21,25 @@ import static org.springframework.http.ResponseEntity.status;
 public class DeclareManagementController {
 
     private  final DeclareManagementService declareManagementService;
+
     @PostMapping
     public ResponseEntity<Message> declare(@RequestBody @Validated DeclareRequest declareRequest){
 
         return status(HttpStatus.OK).body(declareManagementService.declare(declareRequest));
     }
+
+    @PostMapping(value = "/findAccountByPhone")
+    public ResponseEntity<AccountResponse> findAccountByPhone(String phone) {
+
+        return status(HttpStatus.OK).body(declareManagementService.findAccountByPhone(phone));
+    }
+
+//    @PostMapping(value = "/createAccount")
+//    public ResponseEntity<AccountResponse> create(String phone) {
+//
+//        return status(HttpStatus.OK).body(declareManagementService.findAccountByPhone(phone));
+//    }
+
+
 
 }

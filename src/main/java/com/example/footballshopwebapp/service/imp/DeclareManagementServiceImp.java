@@ -1,6 +1,7 @@
 package com.example.footballshopwebapp.service.imp;
 
 import com.example.footballshopwebapp.dto.request.DeclareRequest;
+import com.example.footballshopwebapp.dto.response.AccountResponse;
 import com.example.footballshopwebapp.entity.Account;
 import com.example.footballshopwebapp.entity.Commune;
 import com.example.footballshopwebapp.entity.Question;
@@ -10,6 +11,8 @@ import com.example.footballshopwebapp.repository.CommuneRepository;
 import com.example.footballshopwebapp.repository.QuestionRepository;
 import com.example.footballshopwebapp.service.DeclareManagementService;
 import com.example.footballshopwebapp.share.Message;
+import com.example.footballshopwebapp.share.helper.DateHelper;
+import com.example.footballshopwebapp.share.mapper.AccountMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +23,8 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
     private final CommuneRepository communeRepository;
     private final AccountRepository accountRepository;
     private final QuestionRepository questionRepository;
+    private final AccountMapper accountMapper;
+    private final DateHelper dateHelper;
 
     @Override
     @Transactional
@@ -32,6 +37,8 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
             account.setCmt(declareRequest.getCmt());
             account.setGender(declareRequest.isGender());
             account.setPhone(declareRequest.getPhone());
+            account.setTime(dateHelper.getDateNow());
+            account.setAddress(declareRequest.getAddress());
             Commune commune = communeRepository.findByCommuneId(declareRequest.getIdCommune());
             account.setCommune(commune);
 
@@ -64,9 +71,17 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
 
             return new Message("Khai bao thanh cong");
         } catch (Exception e) {
-            throw new SpringException("Loi roi");
+            throw new SpringException("Loi roi : " + e.getMessage());
         }
 
 
+    }
+
+    @Override
+    public AccountResponse findAccountByPhone(String phone) {
+        Account account = new Account();
+        account = accountRepository.findByPhone(phone);
+
+        return accountMapper.accountResponseMap(account);
     }
 }

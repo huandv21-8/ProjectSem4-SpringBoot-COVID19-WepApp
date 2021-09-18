@@ -35,6 +35,8 @@ public class DeclareRequest {
     @NotNull(message = "idCommune không được null")
     private Long idCommune;
 
+    private String address;
+
     private boolean exposureToF0;
     private boolean comeBackFromEpidemicArea;
     private boolean contactWithPeopleReturningFromEpidemicAreas;
@@ -49,7 +51,7 @@ public class DeclareRequest {
     private boolean chronicLungDisease;
     private boolean chronicKideyDisease;
     private boolean heartRelatedDiseaes;
-    private boolean HighBloodPressure;
+    private boolean highBloodPressure;
     private boolean hivOrImmunocompromised;
     private boolean organTransplantRecipient;
     private boolean diabetes;
