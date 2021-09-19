@@ -1,5 +1,6 @@
 package com.example.footballshopwebapp;
 
+//import com.example.footballshopwebapp.dto.response.CountPeopleByProvince;
 import com.example.footballshopwebapp.dto.response.CountPeopleByProvince;
 import com.example.footballshopwebapp.dto.response.ICountPeopleByProvince;
 import com.example.footballshopwebapp.repository.StatusByTimeRepository;
@@ -9,6 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,10 +27,7 @@ public class FootballShopWebAppApplication {
 //
 //	@PostConstruct
 //	public void test() {
-//		List<ICountPeopleByProvince> iCountPeopleByProvinces = statusByTimeRepository.listCountPeopleByProvince(VariableCommon.SICK);
-//		List<CountPeopleByProvince> countPeopleByProvinces = iCountPeopleByProvinces.stream()
-//				.map(ICountPeopleByProvince::get).collect(Collectors.toList());
-//		System.out.println(countPeopleByProvinces.size());
+//
 //	}
 
 }

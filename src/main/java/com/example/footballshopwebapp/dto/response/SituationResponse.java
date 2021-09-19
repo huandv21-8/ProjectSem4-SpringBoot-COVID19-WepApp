@@ -10,5 +10,5 @@ import java.util.Date;
 @NoArgsConstructor
 public class SituationResponse {
     private String content;
-    private Date updatedAt;
+    private String updatedAt;
 }

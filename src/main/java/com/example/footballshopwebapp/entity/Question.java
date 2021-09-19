@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+import java.util.Date;
+
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -44,6 +46,8 @@ public class Question {
     private boolean cancer;
     private boolean pregnant;
     private String travelSchedule;
+
+    private Date createdAt;
 
 
 }

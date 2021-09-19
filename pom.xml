@@ -15,6 +15,7 @@
 	<name>football-shop-web-app</name>
 	<description>sport football shop web app project for Spring Boot</description>
 	<properties>
+		<property name="hibernate.enable_lazy_load_no_trans" value="true"/>
 		<java.version>11</java.version>
 	</properties>
 	<dependencies>
@@ -148,6 +149,11 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>com.heroku.sdk</groupId>
+				<artifactId>heroku-maven-plugin</artifactId>
+				<version>3.0.3</version>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

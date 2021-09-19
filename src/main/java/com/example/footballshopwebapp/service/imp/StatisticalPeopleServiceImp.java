@@ -1,7 +1,6 @@
 package com.example.footballshopwebapp.service.imp;
 
 import com.example.footballshopwebapp.dto.response.CountPeopleByProvince;
-import com.example.footballshopwebapp.dto.response.CountPeopleByStatusAboutProvince;
 
 import com.example.footballshopwebapp.dto.response.ICountPeopleByProvince;
 import com.example.footballshopwebapp.entity.StatusByTime;
@@ -23,8 +22,6 @@ public class StatisticalPeopleServiceImp implements StatisticalPeopleService {
 
     private final DateHelper dateHelper;
     private final StatusByTimeRepository statusByTimeRepository;
-
-
 
 
     @Override
@@ -92,14 +89,32 @@ public class StatisticalPeopleServiceImp implements StatisticalPeopleService {
     }
 
     @Override
-    public List<CountPeopleByStatusAboutProvince> countPeopleByStatusAboutProvince() {
+    public List<CountPeopleByProvince> countPeopleByStatusAboutProvince() {
         List<ICountPeopleByProvince> iCountCuredByProvinces = statusByTimeRepository.listCountPeopleByProvince(VariableCommon.CURED);
+        List<ICountPeopleByProvince> iCountDiedByProvinces = statusByTimeRepository.listCountPeopleByProvince(VariableCommon.DIED);
+        List<ICountPeopleByProvince> iCountSickByProvinces = statusByTimeRepository.listCountPeopleByProvince(VariableCommon.SICK);
 
-        List<CountPeopleByProvince> countPeopleByProvinces = iCountCuredByProvinces.stream()
-                .map(ICountPeopleByProvince::get).collect(Collectors.toList());
+        List<CountPeopleByProvince> countPeopleByProvinces = new ArrayList<>();
 
+        iCountCuredByProvinces.stream().forEach(cured -> {
+            CountPeopleByProvince countPeopleByProvince = new CountPeopleByProvince();
+            countPeopleByProvince.setCountPeopleCured(cured.getCountPeople());
+            countPeopleByProvince.setProvinceId(cured.getProvinceId());
+            countPeopleByProvince.setProvinceName(cured.getProvinceName());
+            iCountDiedByProvinces.stream().forEach(died -> {
+                if (died.getProvinceId() == cured.getProvinceId()) {
+                    countPeopleByProvince.setCountPeopleDied(died.getCountPeople());
+                }
+            });
+            iCountSickByProvinces.stream().forEach(sick -> {
+                if (sick.getProvinceId() == cured.getProvinceId()) {
+                    countPeopleByProvince.setCountPeopleSick(sick.getCountPeople());
+                }
+            });
+            countPeopleByProvinces.add(countPeopleByProvince);
+        });
 
-        return null;
+        return countPeopleByProvinces;
 
 
     }

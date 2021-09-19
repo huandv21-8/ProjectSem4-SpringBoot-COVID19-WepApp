@@ -44,6 +44,6 @@ public interface StatusByTimeRepository extends JpaRepository<StatusByTime, Long
             "INNER JOIN commune on commune.commune_id= people.commune_id\n" +
             "WHERE status_by_time.status = :status AND people.active= true ) a\n" +
             "ON district.district_id = a.district_id) b\n" +
-            "ON province.province_id = b.province_id GROUP BY province.province_id",nativeQuery = true)
+            "ON province.province_id = b.province_id GROUP BY province.province_id ORDER BY countPeople DESC",nativeQuery = true)
     List<ICountPeopleByProvince> listCountPeopleByProvince(@Param("status") String status);
 }

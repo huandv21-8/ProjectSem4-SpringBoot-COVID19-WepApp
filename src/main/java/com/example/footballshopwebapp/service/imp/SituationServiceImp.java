@@ -28,9 +28,12 @@ public class SituationServiceImp implements SituationService {
 
     @Override
     public Message createSituation(SituationRequest situationRequest) throws Exception {
-        situationRequestMapSituation(situationRequest);
-        situationRepository.save(situationRequestMapSituation(situationRequest));
-        return new Message("success");
+        try {
+            situationRepository.save(situationRequestMapSituation(situationRequest));
+            return new Message("success");
+        }catch (Exception e){
+            throw new SpringException("loi roi:" + e.getMessage());
+        }
     }
 
     @Override
@@ -62,7 +65,7 @@ public class SituationServiceImp implements SituationService {
     private SituationResponse situationMapSituationResponse(Situation situation) {
         SituationResponse situationResponse = new SituationResponse();
         situationResponse.setContent(situation.getContent());
-        situationResponse.setUpdatedAt(situation.getUpdatedAt());
+        situationResponse.setUpdatedAt(dateHelper.convertDateToString(situation.getUpdatedAt(),"HH:mm dd/MM/yyyy") );
         return situationResponse;
     }
 

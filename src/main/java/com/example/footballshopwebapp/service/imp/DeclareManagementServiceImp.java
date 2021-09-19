@@ -1,5 +1,6 @@
 package com.example.footballshopwebapp.service.imp;
 
+import com.example.footballshopwebapp.dto.request.AccountRequest;
 import com.example.footballshopwebapp.dto.request.DeclareRequest;
 import com.example.footballshopwebapp.dto.response.AccountResponse;
 import com.example.footballshopwebapp.entity.Account;
@@ -16,6 +17,8 @@ import com.example.footballshopwebapp.share.mapper.AccountMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -66,7 +69,7 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
             question.setCancer(declareRequest.isCancer());
             question.setPregnant(declareRequest.isPregnant());
             question.setTravelSchedule(declareRequest.getTravelSchedule());
-
+            question.setCreatedAt(dateHelper.getDateNow());
             questionRepository.save(question);
 
             return new Message("Khai bao thanh cong");
@@ -84,4 +87,38 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
 
         return accountMapper.accountResponseMap(account);
     }
+
+    @Override
+    public Message createAccount(AccountRequest accountRequest) {
+        try {
+            Account account = new Account();
+            account.setBirthDay(accountRequest.getBirthDay());
+            account.setName(accountRequest.getName());
+            account.setCmt(accountRequest.getCmt());
+            account.setGender(accountRequest.isGender());
+            account.setPhone(accountRequest.getPhone());
+            account.setTime(dateHelper.getDateNow());
+            account.setAddress(accountRequest.getAddress());
+            Commune commune = communeRepository.findByCommuneId(accountRequest.getIdCommune());
+            account.setCommune(commune);
+            accountRepository.save(account);
+            return new Message("Khai bao thanh cong");
+        } catch (Exception e) {
+            throw new SpringException("Loi roi : " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Question> listDeclare() {
+      return questionRepository.findAll();
+    }
+
+    @Override
+    public Question detailDeclare(Long questionId) {
+       Question question = questionRepository.findByQuestionId(questionId)
+               .orElseThrow(()->new SpringException("Khong ton tai question co id: " + questionId));
+        return question;
+    }
+
+
 }

@@ -5,7 +5,5 @@ public interface ICountPeopleByProvince {
     Long getCountPeople();
     Long getProvinceId();
 
-    static CountPeopleByProvince get(ICountPeopleByProvince peopleByProvince) {
-        return new CountPeopleByProvince(peopleByProvince.getProvinceId(),peopleByProvince.getProvinceName(), peopleByProvince.getCountPeople());
-    }
+
 }
