@@ -15,7 +15,6 @@
 	<name>football-shop-web-app</name>
 	<description>sport football shop web app project for Spring Boot</description>
 	<properties>
-		<property name="hibernate.enable_lazy_load_no_trans" value="true"/>
 		<java.version>11</java.version>
 	</properties>
 	<dependencies>
