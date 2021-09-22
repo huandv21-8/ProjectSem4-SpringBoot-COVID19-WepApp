@@ -42,6 +42,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers(HttpMethod.POST,"/v1/declare/**")
                 .permitAll()
+                .antMatchers(HttpMethod.POST,"/v1/declare/findAccountByPhone")
+                .permitAll()
                 .antMatchers("/v1/address/**")
                 .permitAll()
                 .antMatchers("/v1/statistical/**")

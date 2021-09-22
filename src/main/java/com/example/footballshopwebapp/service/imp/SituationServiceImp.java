@@ -38,7 +38,7 @@ public class SituationServiceImp implements SituationService {
 
     @Override
     public List<SituationResponse> listSituation() {
-        return situationRepository.findAll().stream()
+        return situationRepository.findAllOrderByUpdatedAtDesc().stream()
                 .map(this::situationMapSituationResponse).collect(Collectors.toList());
     }
 

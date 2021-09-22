@@ -6,7 +6,7 @@ import java.util.Date;
 public class AccountResponse {
     private String name;
 
-    private Date birthDay;
+    private String birthDay;
 
     private boolean gender;
 

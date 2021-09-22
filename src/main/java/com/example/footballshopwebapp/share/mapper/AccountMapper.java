@@ -9,10 +9,11 @@ import org.mapstruct.Mapping;
 public interface AccountMapper {
 
     @Mapping(target = "name", source = "account.name")
-    @Mapping(target = "birthDay", source = "account.birthDay")
+    @Mapping(target = "birthDay", source = "birthDay")
     @Mapping(target = "gender", source = "account.gender")
     @Mapping(target = "cmt", source = "account.cmt")
     @Mapping(target = "communeId", source = "account.commune.communeId")
     @Mapping(target = "address", source = "account.address")
-    AccountResponse accountResponseMap(Account account);
+    @Mapping(target = "phone", source = "account.phone")
+    AccountResponse accountResponseMap(Account account,String birthDay);
 }

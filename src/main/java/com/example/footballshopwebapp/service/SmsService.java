@@ -20,7 +20,7 @@ import javax.mail.Store;
 public class SmsService {
     private final String ACCOUNT_SID = "ACec76cbdb19b31d8d747439c756e04032";
 
-    private final String AUTH_TOKEN = "b8dae05d5a7311e88c6dd52598714358";
+    private final String AUTH_TOKEN = "7c4e33f28dc0ed9d0954d6abc132df2d";
 
     private final String FROM_NUMBER = "+13853991793";
 

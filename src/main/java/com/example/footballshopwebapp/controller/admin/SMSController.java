@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.util.MultiValueMap;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -27,13 +28,11 @@ public class SMSController {
 
     private final String TOPIC_DESTINATION = "/lesson/sms";
 
-    //You can send SMS in verified Number
     @PostMapping("/mobile")
-    public ResponseEntity<Boolean> smsSubmit(@RequestBody SmsPojo sms) {
+    public ResponseEntity<Boolean> smsSubmit(@RequestBody @Validated SmsPojo sms) {
         try {
             service.send(sms);
         } catch (Exception e) {
-
             return new ResponseEntity<Boolean>(false, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         webSocket.convertAndSend(TOPIC_DESTINATION, getTimeStamp() + ": SMS has been sent!: " + sms.getPhone());
@@ -41,7 +40,7 @@ public class SMSController {
     }
 
     @PostMapping("/verifyOtp")
-    public Boolean verifyOtp(@RequestBody Otp otp) {
+    public Boolean verifyOtp(@RequestBody @Validated Otp otp) {
         return service.verifyOtp(otp);
     }
 

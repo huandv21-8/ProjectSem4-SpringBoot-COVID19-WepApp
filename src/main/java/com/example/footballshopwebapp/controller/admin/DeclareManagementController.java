@@ -30,7 +30,7 @@ public class DeclareManagementController {
     }
 
     @PostMapping(value = "/findAccountByPhone")
-    public ResponseEntity<AccountResponse> findAccountByPhone(String phone) {
+    public ResponseEntity<AccountResponse> findAccountByPhone(@RequestParam(value = "phone") String phone) {
         return status(HttpStatus.OK).body(declareManagementService.findAccountByPhone(phone));
     }
 

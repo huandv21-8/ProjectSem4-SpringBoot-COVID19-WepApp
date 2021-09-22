@@ -83,9 +83,10 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
     @Override
     public AccountResponse findAccountByPhone(String phone) {
         Account account = new Account();
-        account = accountRepository.findByPhone(phone);
+        account = accountRepository.findByAccPhone(phone);
+        String birthDay= dateHelper.convertDateToString(account.getBirthDay(), "yyyy-MM-dd");
 
-        return accountMapper.accountResponseMap(account);
+        return accountMapper.accountResponseMap(account,birthDay);
     }
 
     @Override

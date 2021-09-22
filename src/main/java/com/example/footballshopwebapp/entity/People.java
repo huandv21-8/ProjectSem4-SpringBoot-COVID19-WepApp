@@ -17,7 +17,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "people")
+@Data
 public class People {
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -32,7 +32,7 @@ public class People {
     @NonNull
     private boolean gender;
 
-    @Column(unique = true)
+//    @Column(unique = true)
     private String phone;
 
     private String  cmt;
@@ -47,75 +47,5 @@ public class People {
 
     private Date time;
 
-    public Long getPeopleId() {
-        return peopleId;
-    }
 
-    public void setPeopleId(Long peopleId) {
-        this.peopleId = peopleId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Date getBirthDay() {
-        return birthDay;
-    }
-
-    public void setBirthDay(Date birthDay) {
-        this.birthDay = birthDay;
-    }
-
-    public boolean isGender() {
-        return gender;
-    }
-
-    public void setGender(boolean gender) {
-        this.gender = gender;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getCmt() {
-        return cmt;
-    }
-
-    public void setCmt(String cmt) {
-        this.cmt = cmt;
-    }
-
-    public Commune getCommune() {
-        return commune;
-    }
-
-    public void setCommune(Commune commune) {
-        this.commune = commune;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public Date getTime() {
-        return time;
-    }
-
-    public void setTime(Date time) {
-        this.time = time;
-    }
 }
