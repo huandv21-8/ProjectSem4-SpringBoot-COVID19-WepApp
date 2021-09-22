@@ -34,20 +34,30 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
     public Message declare(DeclareRequest declareRequest) {
 
         try {
-            Account account = new Account();
-            account.setBirthDay(declareRequest.getBirthDay());
-            account.setName(declareRequest.getName());
-            account.setCmt(declareRequest.getCmt());
-            account.setGender(declareRequest.isGender());
-            account.setPhone(declareRequest.getPhone());
-            account.setTime(dateHelper.getDateNow());
-            account.setAddress(declareRequest.getAddress());
-            Commune commune = communeRepository.findByCommuneId(declareRequest.getIdCommune());
-            account.setCommune(commune);
-
-
             Question question = new Question();
-            question.setAccount(accountRepository.save(account));
+
+            Account account = accountRepository.findByAccPhone(declareRequest.getPhone());
+            if (account != null) {
+
+                if (account.getCommune().getCommuneId() != declareRequest.getIdCommune()) {
+                    Commune commune = communeRepository.findByCommuneId(declareRequest.getIdCommune());
+                    account.setCommune(commune);
+                    account = accountRepository.save(account);
+                }
+                question.setAccount(account);
+            } else {
+                Account account1 = new Account();
+                account1.setBirthDay(declareRequest.getBirthDay());
+                account1.setName(declareRequest.getName());
+                account1.setCmt(declareRequest.getCmt());
+                account1.setGender(declareRequest.isGender());
+                account1.setPhone(declareRequest.getPhone());
+                account1.setTime(dateHelper.getDateNow());
+                account1.setAddress(declareRequest.getAddress());
+                Commune commune = communeRepository.findByCommuneId(declareRequest.getIdCommune());
+                account1.setCommune(commune);
+                question.setAccount(accountRepository.save(account1));
+            }
             question.setExposureToF0(declareRequest.isExposureToF0());
             question.setComeBackFromEpidemicArea(declareRequest.isComeBackFromEpidemicArea());
             question.setContactWithPeopleReturningFromEpidemicAreas(declareRequest.isContactWithPeopleReturningFromEpidemicAreas());
@@ -84,9 +94,9 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
     public AccountResponse findAccountByPhone(String phone) {
         Account account = new Account();
         account = accountRepository.findByAccPhone(phone);
-        String birthDay= dateHelper.convertDateToString(account.getBirthDay(), "yyyy-MM-dd");
+        String birthDay = dateHelper.convertDateToString(account.getBirthDay(), "yyyy-MM-dd");
 
-        return accountMapper.accountResponseMap(account,birthDay);
+        return accountMapper.accountResponseMap(account, birthDay);
     }
 
     @Override
@@ -99,11 +109,12 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
             account.setGender(accountRequest.isGender());
             account.setPhone(accountRequest.getPhone());
             account.setTime(dateHelper.getDateNow());
+            account.setActive(true);
             account.setAddress(accountRequest.getAddress());
             Commune commune = communeRepository.findByCommuneId(accountRequest.getIdCommune());
             account.setCommune(commune);
             accountRepository.save(account);
-            return new Message("Khai bao thanh cong");
+            return new Message("Thêm thành công");
         } catch (Exception e) {
             throw new SpringException("Loi roi : " + e.getMessage());
         }
@@ -111,14 +122,33 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
 
     @Override
     public List<Question> listDeclare() {
-      return questionRepository.findAll();
+        return questionRepository.findAll();
     }
 
     @Override
     public Question detailDeclare(Long questionId) {
-       Question question = questionRepository.findByQuestionId(questionId)
-               .orElseThrow(()->new SpringException("Khong ton tai question co id: " + questionId));
+        Question question = questionRepository.findByQuestionId(questionId)
+                .orElseThrow(() -> new SpringException("Khong ton tai question co id: " + questionId));
         return question;
+    }
+
+    @Override
+    public Message updateAccount(AccountRequest accountRequest) {
+        try {
+            Account account = accountRepository.findByAccPhone(accountRequest.getPhone());
+            account.setBirthDay(accountRequest.getBirthDay());
+            account.setName(accountRequest.getName());
+            account.setCmt(accountRequest.getCmt());
+            account.setGender(accountRequest.isGender());
+            account.setTime(dateHelper.getDateNow());
+            account.setAddress(accountRequest.getAddress());
+            Commune commune = communeRepository.findByCommuneId(accountRequest.getIdCommune());
+            account.setCommune(commune);
+            accountRepository.save(account);
+            return new Message("Cập nhật thành công");
+        } catch (Exception e) {
+            throw new SpringException("Loi roi : " + e.getMessage());
+        }
     }
 
 

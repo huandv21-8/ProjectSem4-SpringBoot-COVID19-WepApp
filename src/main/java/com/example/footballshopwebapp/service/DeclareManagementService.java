@@ -19,4 +19,6 @@ public interface DeclareManagementService {
      List<Question> listDeclare();
 
     Question detailDeclare(Long questionId);
+
+    Message updateAccount(AccountRequest accountRequest);
 }

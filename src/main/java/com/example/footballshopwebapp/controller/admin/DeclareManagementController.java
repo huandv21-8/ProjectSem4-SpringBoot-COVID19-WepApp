@@ -39,6 +39,11 @@ public class DeclareManagementController {
 
         return status(HttpStatus.OK).body(declareManagementService.createAccount(accountRequest));
     }
+    @PostMapping(value = "/updateAccount")
+    public ResponseEntity<Message> updateAccount(@RequestBody @Validated AccountRequest accountRequest) {
+
+        return status(HttpStatus.OK).body(declareManagementService.updateAccount(accountRequest));
+    }
 
     @GetMapping(value = "/listDeclare")
     public ResponseEntity<List<Question>> listDeclare() {

@@ -31,7 +31,7 @@ public class Account {
     @NonNull
     private boolean gender;
 
-//    @Column(unique = true)
+    @Column(unique = true)
     private String phone;
 
     private String  cmt;
