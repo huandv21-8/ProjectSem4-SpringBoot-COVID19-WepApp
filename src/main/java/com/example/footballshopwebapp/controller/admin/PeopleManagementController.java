@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 import static org.springframework.http.ResponseEntity.status;
@@ -30,8 +32,20 @@ public class PeopleManagementController {
     }
 
     @GetMapping("/listPeople")
-    public ResponseEntity<List<PeopleResponseAdmin>> listPeopleByStatus(@RequestParam(required = false) String status) {
+    public ResponseEntity<List<PeopleResponseAdmin>> listPeopleByStatus(
+            @RequestParam(required = false, name="status") String status) throws ParseException {
         return status(HttpStatus.OK).body(peopleManagementService.getAllPeopleByStatus(status));
+    }
+    @GetMapping("/listPeopleSearch")
+    public ResponseEntity<List<PeopleResponseAdmin>> listPeopleByStatusAndSearch(
+            @RequestParam(required = false, name="status") String status,
+            @RequestParam(required = false, name="name") String name,
+            @RequestParam( name="birthDay") String birthDay,
+            @RequestParam( required = false, name="provinceId") Long provinceId
+            ) throws ParseException {
+
+        return status(HttpStatus.OK).body(peopleManagementService.getAllPeopleByStatusAndSearch(status,name,birthDay,provinceId));
+
     }
 
     @GetMapping("/peopleDetailByStatus")

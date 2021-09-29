@@ -17,10 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.text.ParseException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,22 +62,45 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
 
             return new Message("Thanh cong");
         } catch (Exception e) {
-            throw new SpringException("sai roi "+e.getMessage());
+            throw new SpringException("sai roi " + e.getMessage());
         }
 
     }
+
 
     @Override
     public List<PeopleResponseAdmin> getAllPeopleByStatus(String status) {
         List<PeopleResponseAdmin> peopleResponseAdminList = null;
         if (status != null) {
+
             List<StatusByTime> statusByTimeList = statusByTimeRepository.getAllPeopleByStatusWhereActiveTrue(status);
+            System.out.println(statusByTimeList);
             peopleResponseAdminList = statusByTimeList.stream().map((statusByTime) -> {
                 String birthDay = dateHelper.convertDateToString(statusByTime.getPeople().getBirthDay(), "dd/MM/yyyy");
                 return peopleMapper.peopleResponseAdminMap(statusByTime, provinceRepository.getProvinceByCommune(statusByTime.getPeople().getCommune().getCommuneId()), birthDay);
             }).collect(Collectors.toList());
         }
+        return peopleResponseAdminList;
+    }
 
+    @Override
+    public List<PeopleResponseAdmin> getAllPeopleByStatusAndSearch(String status, String name, String birthDay, Long provinceId) {
+        List<PeopleResponseAdmin> peopleResponseAdminList = null;
+        if (status != null) {
+            List<StatusByTime> statusByTimeList = statusByTimeRepository.getAllPeopleByStatusWhereActiveTrueAndSearch(status, name, birthDay);
+            System.out.println(statusByTimeList);
+            peopleResponseAdminList = statusByTimeList.stream()
+                    .filter((statusByTime -> {
+                        if (provinceId == null || provinceId == 0) {
+                            return true;
+                        }
+                        return (statusByTime.getPeople().getCommune().getDistrict().getProvince().getProvinceId() == provinceId);
+                    }))
+                    .map((statusByTime) -> {
+                        String birthDay1 = dateHelper.convertDateToString(statusByTime.getPeople().getBirthDay(), "dd/MM/yyyy");
+                        return peopleMapper.peopleResponseAdminMap(statusByTime, provinceRepository.getProvinceByCommune(statusByTime.getPeople().getCommune().getCommuneId()), birthDay1);
+                    }).collect(Collectors.toList());
+        }
         return peopleResponseAdminList;
     }
 
@@ -87,7 +108,7 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
     @Override
     @Transactional
     public Message deletePeopleById(String status, Long idPeople) {
-        try{
+        try {
             Optional<People> people = Optional.ofNullable(peopleRepository.findByPeopleId(idPeople).
                     orElseThrow(() -> new SpringException("Không có người nào có id là: " + idPeople)));
             people.get().setActive(false);
@@ -120,7 +141,7 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
             String birthDay = dateHelper.convertDateToString(statusByTime.getPeople().getBirthDay(), "dd/MM/yyyy");
             String updatedAt = dateHelper.convertDateToString(statusByTime.getUpdatedAt(), "dd/MM/yyyy");
             String namePeopleSource = null;
-            if (statusByTime.getId_source()!= null && statusByTime.getId_source()!= 0) {
+            if (statusByTime.getId_source() != null && statusByTime.getId_source() != 0) {
                 Optional<People> people = Optional.ofNullable(peopleRepository.findByPeopleId(statusByTime.getId_source()).
                         orElseThrow(() -> new SpringException("Không có người nào có id là: " + statusByTime.getId_source())));
                 if (people != null) {
@@ -143,7 +164,7 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
 
     @Override
     public Map<String, Long> staticalTotalPeopleByStatus() {
-        Map<String,Long> totalPeople = new HashMap<>();
+        Map<String, Long> totalPeople = new HashMap<>();
         totalPeople.put(VariableCommon.CURED, (long) statusByTimeRepository.getAllPeopleByStatusWhereActiveTrue(VariableCommon.CURED).size());
         totalPeople.put(VariableCommon.SICK, (long) statusByTimeRepository.getAllPeopleByStatusWhereActiveTrue(VariableCommon.SICK).size());
         totalPeople.put(VariableCommon.DIED, (long) statusByTimeRepository.getAllPeopleByStatusWhereActiveTrue(VariableCommon.DIED).size());

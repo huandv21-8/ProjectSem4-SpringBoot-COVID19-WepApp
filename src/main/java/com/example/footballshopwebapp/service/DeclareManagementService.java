@@ -3,6 +3,7 @@ package com.example.footballshopwebapp.service;
 import com.example.footballshopwebapp.dto.request.AccountRequest;
 import com.example.footballshopwebapp.dto.request.DeclareRequest;
 import com.example.footballshopwebapp.dto.response.AccountResponse;
+import com.example.footballshopwebapp.dto.response.AccountResponseByAll;
 import com.example.footballshopwebapp.entity.Account;
 import com.example.footballshopwebapp.entity.Question;
 import com.example.footballshopwebapp.share.Message;
@@ -21,4 +22,6 @@ public interface DeclareManagementService {
     Question detailDeclare(Long questionId);
 
     Message updateAccount(AccountRequest accountRequest);
+
+    List<AccountResponseByAll> listAccount();
 }

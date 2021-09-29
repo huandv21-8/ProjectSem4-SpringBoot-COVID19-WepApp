@@ -3,6 +3,8 @@ package com.example.footballshopwebapp.controller.admin;
 import com.example.footballshopwebapp.dto.request.AccountRequest;
 import com.example.footballshopwebapp.dto.request.DeclareRequest;
 import com.example.footballshopwebapp.dto.response.AccountResponse;
+import com.example.footballshopwebapp.dto.response.AccountResponseByAll;
+import com.example.footballshopwebapp.entity.Account;
 import com.example.footballshopwebapp.entity.Question;
 import com.example.footballshopwebapp.service.DeclareManagementService;
 import com.example.footballshopwebapp.share.Message;
@@ -43,6 +45,11 @@ public class DeclareManagementController {
     public ResponseEntity<Message> updateAccount(@RequestBody @Validated AccountRequest accountRequest) {
 
         return status(HttpStatus.OK).body(declareManagementService.updateAccount(accountRequest));
+    }
+
+    @GetMapping(value = "/listAccount")
+    public ResponseEntity<List<AccountResponseByAll>> listAccount(){
+        return status(HttpStatus.OK).body(declareManagementService.listAccount());
     }
 
     @GetMapping(value = "/listDeclare")

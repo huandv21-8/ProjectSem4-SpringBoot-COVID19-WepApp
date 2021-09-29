@@ -3,6 +3,7 @@ package com.example.footballshopwebapp.service.imp;
 import com.example.footballshopwebapp.dto.request.AccountRequest;
 import com.example.footballshopwebapp.dto.request.DeclareRequest;
 import com.example.footballshopwebapp.dto.response.AccountResponse;
+import com.example.footballshopwebapp.dto.response.AccountResponseByAll;
 import com.example.footballshopwebapp.entity.Account;
 import com.example.footballshopwebapp.entity.Commune;
 import com.example.footballshopwebapp.entity.Question;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -149,6 +151,14 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
         } catch (Exception e) {
             throw new SpringException("Loi roi : " + e.getMessage());
         }
+    }
+
+    @Override
+    public List<AccountResponseByAll> listAccount() {
+        return accountRepository.findAllByActiveTrue().stream().map((item) -> {
+            String birthDay = dateHelper.convertDateToString(item.getBirthDay(), "dd/MM/yyyy");
+            return accountMapper.accountResponseByAllMap(item,birthDay);
+        }).collect(Collectors.toList());
     }
 
 

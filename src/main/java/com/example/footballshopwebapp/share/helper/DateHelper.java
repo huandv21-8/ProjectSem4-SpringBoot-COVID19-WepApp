@@ -23,10 +23,10 @@ public class DateHelper {
         }
     }
 
-    private Date formatDate(Date date) throws ParseException {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    public Date formatDate(Date date, String form) throws ParseException {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(form);
         String stringDate = simpleDateFormat.format(date);
-        simpleDateFormat.applyPattern("dd/MM/yyyy");
+        simpleDateFormat.applyPattern(form);
         return simpleDateFormat.parse(stringDate);
     }
 
@@ -56,7 +56,7 @@ public class DateHelper {
         while (startCalendar.before(endCalendar)) {
             Date result = startCalendar.getTime();
             try {
-                datesInRange.add(this.formatDate(result));
+                datesInRange.add(this.formatDate(result, "dd/MM/yyyy"));
             } catch (Exception e) {
                 throw new SpringException("Lỗi chuyển đổi thời gian");
             }

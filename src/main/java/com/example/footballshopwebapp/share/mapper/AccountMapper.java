@@ -1,6 +1,7 @@
 package com.example.footballshopwebapp.share.mapper;
 
 import com.example.footballshopwebapp.dto.response.AccountResponse;
+import com.example.footballshopwebapp.dto.response.AccountResponseByAll;
 import com.example.footballshopwebapp.entity.Account;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -16,4 +17,14 @@ public interface AccountMapper {
     @Mapping(target = "address", source = "account.address")
     @Mapping(target = "phone", source = "account.phone")
     AccountResponse accountResponseMap(Account account,String birthDay);
+
+    @Mapping(target = "accountId", source = "account.accountId")
+    @Mapping(target = "name", source = "account.name")
+    @Mapping(target = "birthDay", source = "birthDay")
+    @Mapping(target = "gender", source = "account.gender")
+    @Mapping(target = "cmt", source = "account.cmt")
+    @Mapping(target = "provinceName", source = "account.commune.district.province.provinceName")
+    @Mapping(target = "address", source = "account.address")
+    @Mapping(target = "phone", source = "account.phone")
+    AccountResponseByAll accountResponseByAllMap(Account account, String birthDay);
 }

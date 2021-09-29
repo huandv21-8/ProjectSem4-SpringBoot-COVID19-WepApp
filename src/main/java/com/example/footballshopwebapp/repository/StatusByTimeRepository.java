@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +19,17 @@ public interface StatusByTimeRepository extends JpaRepository<StatusByTime, Long
             "max_time ON status_by_time.updated_at=max_time.updated_at" +
             " where status_by_time.people_id=max_time.people_id AND status_by_time.status = :status",nativeQuery = true)
     List<StatusByTime> getAllPeopleByStatusWhereActiveTrue(@Param("status") String status);
+
+
+    @Query(value = "SELECT test.* from people INNER JOIN " +
+            "(select status_by_time.* from status_by_time INNER JOIN (select status_by_time.people_id, max(status_by_time.updated_at) " +
+            "as updated_at from status_by_time INNER JOIN people " +
+            "on people.people_id = status_by_time.people_id WHERE people.active = true group by people_id)" +
+            " max_time ON status_by_time.updated_at=max_time.updated_at where status_by_time.people_id=max_time.people_id" +
+            " AND status_by_time.status = :status)test ON test.people_id= people.people_id " +
+            "WHERE people.name LIKE %:name% AND people.birth_day LIKE %:birthDay%",nativeQuery = true)
+    List<StatusByTime> getAllPeopleByStatusWhereActiveTrueAndSearch(@Param("status") String status, @Param("name") String name,
+                                                           @Param("birthDay") String birthDay);
 
     @Query(value = "SELECT peo.status_by_time_id,peo.id_source,peo.status,peo.travel_schedule,peo.type,peo.people_id," +
             " MAX(peo.updated_at) AS updated_at FROM status_by_time as peo " +
