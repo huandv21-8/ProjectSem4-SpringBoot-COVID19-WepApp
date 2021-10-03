@@ -4,21 +4,19 @@ import com.example.footballshopwebapp.dto.request.AccountRequest;
 import com.example.footballshopwebapp.dto.request.DeclareRequest;
 import com.example.footballshopwebapp.dto.response.AccountResponse;
 import com.example.footballshopwebapp.dto.response.AccountResponseByAll;
-import com.example.footballshopwebapp.entity.Account;
-import com.example.footballshopwebapp.entity.Commune;
-import com.example.footballshopwebapp.entity.Question;
+import com.example.footballshopwebapp.entity.*;
 import com.example.footballshopwebapp.exceptions.SpringException;
-import com.example.footballshopwebapp.repository.AccountRepository;
-import com.example.footballshopwebapp.repository.CommuneRepository;
-import com.example.footballshopwebapp.repository.QuestionRepository;
+import com.example.footballshopwebapp.repository.*;
 import com.example.footballshopwebapp.service.DeclareManagementService;
 import com.example.footballshopwebapp.share.Message;
 import com.example.footballshopwebapp.share.helper.DateHelper;
+import com.example.footballshopwebapp.share.helper.VariableCommon;
 import com.example.footballshopwebapp.share.mapper.AccountMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +28,9 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
     private final QuestionRepository questionRepository;
     private final AccountMapper accountMapper;
     private final DateHelper dateHelper;
+    private final PeopleRepository peopleRepository;
+    private final StatusByTimeRepository statusByTimeRepository;
+
 
     @Override
     @Transactional
@@ -55,6 +56,7 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
                 account1.setGender(declareRequest.isGender());
                 account1.setPhone(declareRequest.getPhone());
                 account1.setTime(dateHelper.getDateNow());
+                account1.setActive(true);
                 account1.setAddress(declareRequest.getAddress());
                 Commune commune = communeRepository.findByCommuneId(declareRequest.getIdCommune());
                 account1.setCommune(commune);
@@ -157,8 +159,83 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
     public List<AccountResponseByAll> listAccount() {
         return accountRepository.findAllByActiveTrue().stream().map((item) -> {
             String birthDay = dateHelper.convertDateToString(item.getBirthDay(), "dd/MM/yyyy");
-            return accountMapper.accountResponseByAllMap(item,birthDay);
+            return accountMapper.accountResponseByAllMap(item, birthDay);
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public Message managementAccount(String optionChoose, Long accountId) {
+        try {
+            Account account = accountRepository.findAccountByAccountId(accountId);
+            if (optionChoose.equals("deleteAccount") || optionChoose.equals("deleteAllAccount")) {
+                account.setActive(false);
+                accountRepository.save(account);
+            } else {
+                People people = peopleRepository.findPeople(account.getBirthDay(),
+                        account.getCmt(),
+                        account.isGender(),
+                        account.getName(),
+                        account.getPhone(),
+                        account.getCommune().getCommuneId());
+                if (!Objects.isNull(people)
+                        && people.getName().equals(account.getName())
+                        && people.getCommune().equals(account.getCommune())
+                        && people.getBirthDay().equals(account.getBirthDay())) {
+
+                    StatusByTime statusByTime = new StatusByTime();
+                    statusByTime.setPeople(people);
+                    statusByTime.setType(true);
+                    statusByTime.setUpdatedAt(dateHelper.getDateNow());
+
+                    if (optionChoose.equals("sickAccount") || optionChoose.equals("sickAllAccount")) {
+                        statusByTime.setStatus(VariableCommon.SICK);
+                    }
+                    if (optionChoose.equals("f1Account") || optionChoose.equals("f1AllAccount")) {
+                        statusByTime.setStatus(VariableCommon.F1);
+                    }
+                    statusByTimeRepository.save(statusByTime);
+                } else {
+                    People people1 = new People();
+                    people1.setName(account.getName());
+                    people1.setBirthDay(account.getBirthDay());
+                    people1.setGender(account.isGender());
+                    people1.setPhone(account.getPhone());
+                    people1.setCommune(communeRepository.findByCommuneId(account.getCommune().getCommuneId()));
+                    people1.setTime(dateHelper.getDateNow());
+                    people1.setCmt(account.getCmt());
+                    people1.setActive(true);
+
+                    StatusByTime statusByTime = new StatusByTime();
+                    statusByTime.setPeople(peopleRepository.save(people1));
+                    if (optionChoose.equals("sickAccount") || optionChoose.equals("sickAllAccount")) {
+                        statusByTime.setStatus(VariableCommon.SICK);
+                    }
+                    if (optionChoose.equals("f1Account") || optionChoose.equals("f1AllAccount")) {
+                        statusByTime.setStatus(VariableCommon.F1);
+                    }
+                    statusByTime.setType(true);
+                    statusByTime.setUpdatedAt(dateHelper.getDateNow());
+                    statusByTimeRepository.save(statusByTime);
+                }
+
+            }
+            return new Message("Thành công");
+        } catch (Exception e) {
+            throw new SpringException("Loi roi : " + e.getMessage());
+        }
+    }
+
+    @Override
+    public Message managementAllAccountByCheckBox(String optionChoose, List<Long> listAccountIdCheckbox) {
+        if (listAccountIdCheckbox.size() > 0) {
+            listAccountIdCheckbox.stream().forEach(item -> {
+                managementAccount(optionChoose, item);
+            });
+            return new Message("Xóa thành công");
+        } else {
+            throw new SpringException("Loi roi ");
+        }
+
     }
 
 

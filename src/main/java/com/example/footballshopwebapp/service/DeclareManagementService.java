@@ -24,4 +24,8 @@ public interface DeclareManagementService {
     Message updateAccount(AccountRequest accountRequest);
 
     List<AccountResponseByAll> listAccount();
+
+    Message managementAccount(String optionChoose,Long accountId);
+
+    Message managementAllAccountByCheckBox(String optionChoose,List<Long> listAccountIdCheckbox);
 }

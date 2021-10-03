@@ -23,10 +23,10 @@ import static org.springframework.http.ResponseEntity.status;
 @RequestMapping("/v1/declare")
 public class DeclareManagementController {
 
-    private  final DeclareManagementService declareManagementService;
+    private final DeclareManagementService declareManagementService;
 
     @PostMapping
-    public ResponseEntity<Message> declare(@RequestBody @Validated DeclareRequest declareRequest){
+    public ResponseEntity<Message> declare(@RequestBody @Validated DeclareRequest declareRequest) {
 
         return status(HttpStatus.OK).body(declareManagementService.declare(declareRequest));
     }
@@ -41,6 +41,7 @@ public class DeclareManagementController {
 
         return status(HttpStatus.OK).body(declareManagementService.createAccount(accountRequest));
     }
+
     @PostMapping(value = "/updateAccount")
     public ResponseEntity<Message> updateAccount(@RequestBody @Validated AccountRequest accountRequest) {
 
@@ -48,14 +49,29 @@ public class DeclareManagementController {
     }
 
     @GetMapping(value = "/listAccount")
-    public ResponseEntity<List<AccountResponseByAll>> listAccount(){
+    public ResponseEntity<List<AccountResponseByAll>> listAccount() {
         return status(HttpStatus.OK).body(declareManagementService.listAccount());
+    }
+
+    @DeleteMapping(value = "/managementAccount/{accountId}")
+    public ResponseEntity<Message> managementAccount(@PathVariable(value = "accountId") Long accountId,
+                                                 @RequestParam(value = "optionChoose") String optionChoose) {
+        return status(HttpStatus.OK).body(declareManagementService.managementAccount(optionChoose,accountId));
+    }
+
+    @PostMapping(value = "/managementAllAccount")
+    public ResponseEntity<Message> managementAllAccountByCheckBox( @RequestParam(value = "optionChoose") String optionChoose,
+                                                               @RequestBody List<Long> listAccountIdCheckbox) {
+
+        return status(HttpStatus.OK).body(
+                declareManagementService.managementAllAccountByCheckBox(optionChoose,listAccountIdCheckbox));
     }
 
     @GetMapping(value = "/listDeclare")
     public ResponseEntity<List<Question>> listDeclare() {
-        return status(HttpStatus.OK).body(declareManagementService.listDeclare());
+          return status(HttpStatus.OK).body(declareManagementService.listDeclare());
     }
+
     @GetMapping(value = "/detailDeclare/{questionId}")
     public ResponseEntity<Question> detailDeclare(@PathVariable(value = "questionId") Long questionId) {
         return status(HttpStatus.OK).body(declareManagementService.detailDeclare(questionId));

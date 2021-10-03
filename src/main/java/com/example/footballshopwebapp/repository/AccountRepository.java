@@ -15,4 +15,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Account findByAccPhone(@Param("phone") String phone);
 
     List<Account> findAllByActiveTrue();
+    Account findAccountByAccountId(Long accountId);
 }
