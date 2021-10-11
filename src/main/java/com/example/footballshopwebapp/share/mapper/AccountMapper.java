@@ -24,6 +24,8 @@ public interface AccountMapper {
     @Mapping(target = "gender", source = "account.gender")
     @Mapping(target = "cmt", source = "account.cmt")
     @Mapping(target = "provinceName", source = "account.commune.district.province.provinceName")
+    @Mapping(target = "communeName", source = "account.commune.communeName")
+    @Mapping(target = "districtName", source = "account.commune.district.districtName")
     @Mapping(target = "address", source = "account.address")
     @Mapping(target = "phone", source = "account.phone")
     AccountResponseByAll accountResponseByAllMap(Account account, String birthDay);

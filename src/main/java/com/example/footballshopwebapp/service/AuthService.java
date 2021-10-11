@@ -1,6 +1,11 @@
 package com.example.footballshopwebapp.service;
 
 
+import com.example.footballshopwebapp.dto.Otp;
+import com.example.footballshopwebapp.dto.OtpEmail;
+import com.example.footballshopwebapp.dto.StoreOtp;
+import com.example.footballshopwebapp.dto.request.ChangePassword;
+import com.example.footballshopwebapp.dto.request.CheckEmailResetPassword;
 import com.example.footballshopwebapp.dto.response.AuthenticationResponse;
 import com.example.footballshopwebapp.dto.request.LoginRequest;
 import com.example.footballshopwebapp.dto.RefreshTokenRequest;
@@ -27,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -99,7 +105,7 @@ public class AuthService {
     public AuthenticationResponse login(LoginRequest loginRequest) {
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
                 loginRequest.getPassword()));
-      SecurityContextHolder.getContext().setAuthentication(authenticate);
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getEmail());
 
@@ -126,5 +132,40 @@ public class AuthService {
     public boolean isLoggedIn() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return !(authentication instanceof AnonymousAuthenticationToken) && authentication.isAuthenticated();
+    }
+
+    public boolean checkAccount(CheckEmailResetPassword checkEmailResetPassword) {
+      User user = userRepository.findUserByEmail(checkEmailResetPassword.getEmail());
+        return !Objects.isNull(user);
+    }
+
+    public void sendOtpEmail(String email) {
+
+        int min = 100000;
+        int max = 999999;
+        int number = (int) (Math.random() * (max - min + 1) + min);
+
+        mailService.sendMail(new NotificationEmail("THAY ĐỔI MẬT KHẨU",
+                email, "Mã thay đổi mật khẩu của bạn là: " + number));
+        OtpEmail.setOtp(number);
+    }
+
+    public Boolean verifyOtpEmail(Otp otp) {
+        if (otp.getOtp() == OtpEmail.getOtp()){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    public boolean changePassword(ChangePassword changePassword) {
+        if (changePassword.getPassword().equalsIgnoreCase(changePassword.getCheckPassword())){
+            User user = userRepository.findUserByEmail(changePassword.getEmail());
+            user.setPassword(passwordEncoder.encode(changePassword.getPassword()));
+            userRepository.save(user);
+            return true;
+        }else {
+            throw new SpringException("Đổi mật khẩu không thành công");
+        }
     }
 }

@@ -1,8 +1,6 @@
 package com.example.footballshopwebapp.dto;
 
-
-
-public class StoreOtp {
+public class OtpEmail {
     private static int otp;
 
     public static int getOtp() {
@@ -10,6 +8,6 @@ public class StoreOtp {
     }
 
     public static void setOtp(int otp) {
-        StoreOtp.otp = otp;
+        OtpEmail.otp = otp;
     }
 }

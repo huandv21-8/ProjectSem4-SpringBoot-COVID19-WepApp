@@ -1,6 +1,9 @@
 package com.example.footballshopwebapp.controller.admin;
 
 
+import com.example.footballshopwebapp.dto.Otp;
+import com.example.footballshopwebapp.dto.request.ChangePassword;
+import com.example.footballshopwebapp.dto.request.CheckEmailResetPassword;
 import com.example.footballshopwebapp.dto.response.AuthenticationResponse;
 import com.example.footballshopwebapp.dto.request.LoginRequest;
 import com.example.footballshopwebapp.dto.RefreshTokenRequest;
@@ -9,6 +12,7 @@ import com.example.footballshopwebapp.service.AuthService;
 import com.example.footballshopwebapp.service.RefreshTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -39,7 +43,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public AuthenticationResponse login(@RequestBody LoginRequest loginRequest) {
+    public AuthenticationResponse login(@RequestBody @Validated LoginRequest loginRequest) {
         return authService.login(loginRequest);
     }
 
@@ -53,4 +57,26 @@ public class AuthController {
         refreshTokenService.deleteRefreshToken(refreshTokenRequest.getRefreshToken());
         return ResponseEntity.status(OK).body("Refresh Token Deleted Successfully!!");
     }
+
+    @PostMapping(value = "/checkAccount")
+    public ResponseEntity<Boolean> checkAccount(@RequestBody @Validated CheckEmailResetPassword checkEmailResetPassword){
+        return ResponseEntity.status(OK).body(authService.checkAccount(checkEmailResetPassword));
+    }
+
+    @PostMapping(value = "/sendOtpEmail")
+    public ResponseEntity<Boolean> sendOtpEmail(@RequestParam(value = "email") String email){
+        authService.sendOtpEmail(email);
+        return ResponseEntity.status(OK).body(true);
+    }
+
+    @PostMapping("/verifyOtpEmail")
+    public Boolean verifyOtpEmail(@RequestBody @Validated Otp otp) {
+        return authService.verifyOtpEmail(otp);
+    }
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<Boolean> changePassword(@RequestBody @Validated ChangePassword changePassword) {
+        return ResponseEntity.status(OK).body( authService.changePassword(changePassword));
+    }
+
 }

@@ -3,22 +3,16 @@ package com.example.footballshopwebapp.dto.response;
 import lombok.Data;
 
 @Data
-public class AccountResponseByAll {
-
-    private Long accountId;
+public class DeclareResponse {
+    private Long questionId;
     private String name;
 
-    private String birthDay;
-
-    private boolean gender;
+    private String updateAt;
 
     private String phone;
-
-    private String  cmt;
 
     private String provinceName;
     private String districtName;
     private String communeName;
 
-    private String address;
 }

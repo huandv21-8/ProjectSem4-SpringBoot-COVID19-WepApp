@@ -55,9 +55,7 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
             statusByTime.setType(peopleRequest.isType());
             statusByTime.setUpdatedAt(dateHelper.getDateNow());
             statusByTime.setTravelSchedule(peopleRequest.getSchedule());
-            if (peopleRequest.getIdSourced() != null && (peopleRequest.isType() || peopleRequest.getStatus().equals(VariableCommon.F1))) {
-                statusByTime.setId_source(peopleRequest.getIdSourced());
-            }
+
             statusByTimeRepository.save(statusByTime);
 
             return new Message("Thanh cong");
@@ -76,7 +74,7 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
             List<StatusByTime> statusByTimeList = statusByTimeRepository.getAllPeopleByStatusWhereActiveTrue(status);
             System.out.println(statusByTimeList);
             peopleResponseAdminList = statusByTimeList.stream().map((statusByTime) -> {
-                String birthDay = dateHelper.convertDateToString(statusByTime.getPeople().getBirthDay(), "dd/MM/yyyy");
+                String birthDay = dateHelper.convertDateToString(statusByTime.getPeople().getBirthDay(), "MM/dd/yyyy");
                 return peopleMapper.peopleResponseAdminMap(statusByTime, provinceRepository.getProvinceByCommune(statusByTime.getPeople().getCommune().getCommuneId()), birthDay);
             }).collect(Collectors.toList());
         }
@@ -88,7 +86,6 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
         List<PeopleResponseAdmin> peopleResponseAdminList = null;
         if (status != null) {
             List<StatusByTime> statusByTimeList = statusByTimeRepository.getAllPeopleByStatusWhereActiveTrueAndSearch(status, name, birthDay);
-            System.out.println(statusByTimeList);
             peopleResponseAdminList = statusByTimeList.stream()
                     .filter((statusByTime -> {
                         if (provinceId == null || provinceId == 0) {
@@ -97,7 +94,7 @@ public class PeopleManagementServiceImp implements PeopleManagementService {
                         return (statusByTime.getPeople().getCommune().getDistrict().getProvince().getProvinceId() == provinceId);
                     }))
                     .map((statusByTime) -> {
-                        String birthDay1 = dateHelper.convertDateToString(statusByTime.getPeople().getBirthDay(), "dd/MM/yyyy");
+                        String birthDay1 = dateHelper.convertDateToString(statusByTime.getPeople().getBirthDay(), "MM/dd/yyyy");
                         return peopleMapper.peopleResponseAdminMap(statusByTime, provinceRepository.getProvinceByCommune(statusByTime.getPeople().getCommune().getCommuneId()), birthDay1);
                     }).collect(Collectors.toList());
         }

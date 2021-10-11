@@ -4,6 +4,8 @@ import com.example.footballshopwebapp.dto.request.AccountRequest;
 import com.example.footballshopwebapp.dto.request.DeclareRequest;
 import com.example.footballshopwebapp.dto.response.AccountResponse;
 import com.example.footballshopwebapp.dto.response.AccountResponseByAll;
+import com.example.footballshopwebapp.dto.response.DeclareResponse;
+import com.example.footballshopwebapp.dto.response.QuestionResponse;
 import com.example.footballshopwebapp.entity.*;
 import com.example.footballshopwebapp.exceptions.SpringException;
 import com.example.footballshopwebapp.repository.*;
@@ -12,10 +14,13 @@ import com.example.footballshopwebapp.share.Message;
 import com.example.footballshopwebapp.share.helper.DateHelper;
 import com.example.footballshopwebapp.share.helper.VariableCommon;
 import com.example.footballshopwebapp.share.mapper.AccountMapper;
+import com.example.footballshopwebapp.share.mapper.DeclareMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +35,7 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
     private final DateHelper dateHelper;
     private final PeopleRepository peopleRepository;
     private final StatusByTimeRepository statusByTimeRepository;
+    private final DeclareMapper declareMapper;
 
 
     @Override
@@ -130,10 +136,12 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
     }
 
     @Override
-    public Question detailDeclare(Long questionId) {
+    public QuestionResponse detailDeclare(Long questionId) {
         Question question = questionRepository.findByQuestionId(questionId)
                 .orElseThrow(() -> new SpringException("Khong ton tai question co id: " + questionId));
-        return question;
+        String birthDay = dateHelper.convertDateToString(question.getAccount().getBirthDay(), "dd/MM/yyyy");
+        String updateAt = dateHelper.convertDateToString(question.getCreatedAt(), "dd/MM/yyyy hh:mm:ss");
+        return declareMapper.questionResponseMap(question,birthDay,updateAt);
     }
 
     @Override
@@ -158,7 +166,7 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
     @Override
     public List<AccountResponseByAll> listAccount() {
         return accountRepository.findAllByActiveTrue().stream().map((item) -> {
-            String birthDay = dateHelper.convertDateToString(item.getBirthDay(), "dd/MM/yyyy");
+            String birthDay = dateHelper.convertDateToString(item.getBirthDay(), "MM/dd/yyyy");
             return accountMapper.accountResponseByAllMap(item, birthDay);
         }).collect(Collectors.toList());
     }
@@ -236,6 +244,49 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
             throw new SpringException("Loi roi ");
         }
 
+    }
+
+    @Override
+    public AccountResponseByAll detailAccount(Long accountId) {
+        Account account = accountRepository.findAccountByAccountId(accountId);
+        String birthDay = dateHelper.convertDateToString(account.getBirthDay(), "MM/dd/yyyy");
+        return accountMapper.accountResponseByAllMap(account, birthDay);
+    }
+
+    @Override
+    public List<AccountResponseByAll> listAccountSearch(String phone, String name, String birthDay, Long provinceId) {
+        List<AccountResponseByAll> listAccountResponse = null;
+        List<Account> accountList = accountRepository.findAllAccountSearch(name, birthDay, phone);
+        listAccountResponse = accountList.stream()
+                .filter(item -> {
+                    if (provinceId == null || provinceId == 0) {
+                        return true;
+                    }
+                    return (item.getCommune().getDistrict().getProvince().getProvinceId() == provinceId);
+                }).map(item -> {
+                    String birthDay1 = dateHelper.convertDateToString(item.getBirthDay(), "MM/dd/yyyy");
+                    return accountMapper.accountResponseByAllMap(item, birthDay1);
+                }).collect(Collectors.toList());
+        return listAccountResponse;
+    }
+
+    @Override
+    public List<DeclareResponse> listDeclareByAccountId(Long accountId,String orderByDate) {
+        List<Question> listQuestion = new ArrayList<>();
+        if (orderByDate.equals("ASC")){
+            listQuestion = questionRepository.findAllByAccountIdAndOrderByCreatedAtAsc(accountId);
+        }
+        if (orderByDate.equals("DESC")){
+            listQuestion = questionRepository.findAllByAccountIdAndOrderByCreatedAtDesc(accountId);
+        }
+
+
+        List<DeclareResponse> list = listQuestion.stream()
+                .map(item->{
+                    String updateAt= dateHelper.convertDateToString(item.getCreatedAt(), "dd/MM/yyyy hh:mm:ss");
+                    return declareMapper.accountResponseMap(item,updateAt);
+                }).collect(Collectors.toList());
+        return list;
     }
 
 

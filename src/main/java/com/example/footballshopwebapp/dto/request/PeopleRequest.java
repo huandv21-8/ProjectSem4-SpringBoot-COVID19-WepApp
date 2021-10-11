@@ -32,7 +32,6 @@ public class PeopleRequest {
     private String status;
 
     private boolean type;
-    private Long idSourced;
 
     @NotNull(message = "idProvince không được null")
     private Long idProvince;
