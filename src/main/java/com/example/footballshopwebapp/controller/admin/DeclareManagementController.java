@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.text.ParseException;
 import java.util.List;
 
@@ -94,10 +95,14 @@ public class DeclareManagementController {
         return status(HttpStatus.OK).body(declareManagementService.listDeclareByAccountId(accountId,orderByDate));
     }
 
-    @GetMapping(value = "/detailDeclare/{questionId}")
+    @GetMapping(value = "/detailDeclare/{questionId}")   // lấy khai báo chi tiết theo id
     public ResponseEntity<QuestionResponse> detailDeclare(@PathVariable(value = "questionId") Long questionId) {
         return status(HttpStatus.OK).body(declareManagementService.detailDeclare(questionId));
     }
 
+    @PostMapping(value = "/detailDeclareRecent") // lấy khai báo chi tiết theo phone
+    public ResponseEntity<QuestionResponse> detailDeclareRecent(@PathParam(value = "phone") String phone) {
+        return status(HttpStatus.OK).body(declareManagementService.detailDeclareRecent(phone));
+    }
 
 }

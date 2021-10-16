@@ -36,4 +36,6 @@ public interface DeclareManagementService {
     List<AccountResponseByAll> listAccountSearch(String phone, String name, String birthDay, Long provinceId);
 
     List<DeclareResponse> listDeclareByAccountId(Long accountId, String orderByDate);
+
+    QuestionResponse detailDeclareRecent(String phone);
 }

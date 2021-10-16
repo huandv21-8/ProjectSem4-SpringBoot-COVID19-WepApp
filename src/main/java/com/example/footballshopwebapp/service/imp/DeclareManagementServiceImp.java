@@ -291,5 +291,19 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
         return list;
     }
 
+    @Override
+    public QuestionResponse detailDeclareRecent(String phone) {
+        Question question = questionRepository.detailDeclareRecent(phone);
+
+        if(!Objects.isNull(question)){
+            String birthDay = dateHelper.convertDateToString(question.getAccount().getBirthDay(), "dd/MM/yyyy");
+            String updateAt = dateHelper.convertDateToString(question.getCreatedAt(), "dd/MM/yyyy hh:mm:ss");
+            return declareMapper.questionResponseMap(question, birthDay, updateAt);
+        }else {
+            throw new SpringException("khong tim thay ai!!!");
+        }
+
+    }
+
 
 }
