@@ -13,7 +13,7 @@ import com.example.footballshopwebapp.share.Message;
 import java.util.List;
 
 public interface DeclareManagementService {
-    Message declare(DeclareRequest declareRequest);
+    QuestionResponse declare(DeclareRequest declareRequest);
 
     AccountResponse findAccountByPhone(String phone);
 

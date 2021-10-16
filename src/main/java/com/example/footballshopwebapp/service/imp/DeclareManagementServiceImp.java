@@ -40,7 +40,7 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
 
     @Override
     @Transactional
-    public Message declare(DeclareRequest declareRequest) {
+    public QuestionResponse declare(DeclareRequest declareRequest) {
 
         try {
             Question question = new Question();
@@ -90,9 +90,11 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
             question.setPregnant(declareRequest.isPregnant());
             question.setTravelSchedule(declareRequest.getTravelSchedule());
             question.setCreatedAt(dateHelper.getDateNow());
-            questionRepository.save(question);
+            Question questionResponse = questionRepository.save(question);
 
-            return new Message("Khai bao thanh cong");
+            String birthDay = dateHelper.convertDateToString(questionResponse.getAccount().getBirthDay(), "dd/MM/yyyy");
+            String updateAt = dateHelper.convertDateToString(questionResponse.getCreatedAt(), "dd/MM/yyyy hh:mm:ss");
+            return declareMapper.questionResponseMap(questionResponse, birthDay, updateAt);
         } catch (Exception e) {
             throw new SpringException("Loi roi : " + e.getMessage());
         }
@@ -141,7 +143,7 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
                 .orElseThrow(() -> new SpringException("Khong ton tai question co id: " + questionId));
         String birthDay = dateHelper.convertDateToString(question.getAccount().getBirthDay(), "dd/MM/yyyy");
         String updateAt = dateHelper.convertDateToString(question.getCreatedAt(), "dd/MM/yyyy hh:mm:ss");
-        return declareMapper.questionResponseMap(question,birthDay,updateAt);
+        return declareMapper.questionResponseMap(question, birthDay, updateAt);
     }
 
     @Override
@@ -271,20 +273,20 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
     }
 
     @Override
-    public List<DeclareResponse> listDeclareByAccountId(Long accountId,String orderByDate) {
+    public List<DeclareResponse> listDeclareByAccountId(Long accountId, String orderByDate) {
         List<Question> listQuestion = new ArrayList<>();
-        if (orderByDate.equals("ASC")){
+        if (orderByDate.equals("ASC")) {
             listQuestion = questionRepository.findAllByAccountIdAndOrderByCreatedAtAsc(accountId);
         }
-        if (orderByDate.equals("DESC")){
+        if (orderByDate.equals("DESC")) {
             listQuestion = questionRepository.findAllByAccountIdAndOrderByCreatedAtDesc(accountId);
         }
 
 
         List<DeclareResponse> list = listQuestion.stream()
-                .map(item->{
-                    String updateAt= dateHelper.convertDateToString(item.getCreatedAt(), "dd/MM/yyyy hh:mm:ss");
-                    return declareMapper.accountResponseMap(item,updateAt);
+                .map(item -> {
+                    String updateAt = dateHelper.convertDateToString(item.getCreatedAt(), "dd/MM/yyyy hh:mm:ss");
+                    return declareMapper.accountResponseMap(item, updateAt);
                 }).collect(Collectors.toList());
         return list;
     }

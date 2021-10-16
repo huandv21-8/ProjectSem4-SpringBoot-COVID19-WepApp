@@ -78,7 +78,7 @@ public class DeclareManagementController {
 
 
     @PostMapping
-    public ResponseEntity<Message> declare(@RequestBody @Validated DeclareRequest declareRequest) {
+    public ResponseEntity<QuestionResponse> declare(@RequestBody @Validated DeclareRequest declareRequest) {
 
         return status(HttpStatus.OK).body(declareManagementService.declare(declareRequest));
     }

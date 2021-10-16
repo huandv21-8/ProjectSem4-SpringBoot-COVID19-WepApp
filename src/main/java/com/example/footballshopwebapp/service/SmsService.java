@@ -18,18 +18,7 @@ import javax.mail.Store;
 
 @Component
 public class SmsService {
-//    private final String ACCOUNT_SID = "AC1daebab2c3433315b05efcab26688340";
-//
-//    private final String AUTH_TOKEN = "d96aefad7b7897c72e2c8c30c69e9f77";
-//
-//    private final String FROM_NUMBER = "+15703619943";
 
-//
-//    private final String ACCOUNT_SID = "ACec76cbdb19b31d8d747439c756e04032";
-//
-//    private final String AUTH_TOKEN = "d389c98f15426b3978a4c54e386abb1e";
-//
-//    private final String FROM_NUMBER = "+13853991793";
 
     public void send(SmsPojo sms) throws ParseException {
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
