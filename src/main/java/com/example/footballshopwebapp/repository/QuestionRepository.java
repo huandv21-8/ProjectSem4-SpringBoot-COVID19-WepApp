@@ -24,4 +24,10 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             "  inner join account on account.account_id = question.account_id where account.phone = :phone)a \n" +
             "            on a.max_time = question.created_at ", nativeQuery = true)
     Question detailDeclareRecent(@Param("phone") String phone);
+
+    @Query(value = "Select question.* from question inner join (SELECT MAX(created_at) as max_time FROM question " +
+            "inner join account on account.account_id = question.account_id GROUP BY account.account_id) " +
+            "a on a.max_time = question.created_at", nativeQuery = true)
+    List<Question> listQuestionRecent();
+
 }

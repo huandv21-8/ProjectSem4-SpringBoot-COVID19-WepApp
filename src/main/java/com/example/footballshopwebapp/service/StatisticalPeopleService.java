@@ -1,5 +1,6 @@
 package com.example.footballshopwebapp.service;
 
+import com.example.footballshopwebapp.dto.dataCovidStatisticalNcov.DataCallApiJsonNcov;
 import com.example.footballshopwebapp.dto.response.CountPeopleByProvince;
 
 import java.util.Date;
@@ -11,4 +12,6 @@ public interface StatisticalPeopleService {
     Map<String, TreeMap<Date,Integer>> dashboard(String timeForm);
 
     List<CountPeopleByProvince> countPeopleByStatusAboutProvince();
+
+    DataCallApiJsonNcov testDataCovid() throws Exception;
 }

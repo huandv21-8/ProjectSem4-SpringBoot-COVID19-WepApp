@@ -1,5 +1,6 @@
 package com.example.footballshopwebapp.controller.admin;
 
+import com.example.footballshopwebapp.dto.dataCovidStatisticalNcov.DataCallApiJsonNcov;
 import com.example.footballshopwebapp.dto.response.CountPeopleByProvince;
 import com.example.footballshopwebapp.service.PeopleManagementService;
 import com.example.footballshopwebapp.service.StatisticalPeopleService;
@@ -37,6 +38,11 @@ public class StatisticalPeopleController {
     @GetMapping("/countPeopleByStatusAboutProvince")
     public List<CountPeopleByProvince> countPeopleByStatusAboutProvince(){
         return statisticalPeopleService.countPeopleByStatusAboutProvince();
+    }
+
+    @GetMapping("/dataFileJsonNcov")
+    public DataCallApiJsonNcov dataFileJsonNcov() throws Exception {
+        return statisticalPeopleService.testDataCovid();
     }
 
 

@@ -21,4 +21,6 @@ public class AccountResponseByAll {
     private String communeName;
 
     private String address;
+
+    private int ratio;
 }

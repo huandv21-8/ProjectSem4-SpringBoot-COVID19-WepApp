@@ -19,10 +19,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Objects;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -167,10 +164,52 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
 
     @Override
     public List<AccountResponseByAll> listAccount() {
-        return accountRepository.findAllByActiveTrue().stream().map((item) -> {
-            String birthDay = dateHelper.convertDateToString(item.getBirthDay(), "MM/dd/yyyy");
-            return accountMapper.accountResponseByAllMap(item, birthDay);
-        }).collect(Collectors.toList());
+        List<Question> questionList = questionRepository.listQuestionRecent();
+        List<AccountResponseByAll> accountResponseByAllList = new ArrayList<>();
+        if (questionList.size() > 0) {
+            questionList.stream().forEach(item -> {
+                int ratio = 0;
+                if (item.isExposureToF0()) {
+                    ratio += 3;
+                }
+                if (item.isComeBackFromEpidemicArea()) {
+                    ratio += 1;
+                }
+                if (item.isFever()) {
+                    ratio += 1;
+                }
+                if (item.isCough()) {
+                    ratio += 1;
+                }
+                if (item.isShortnessOfBreath()) {
+                    ratio += 1;
+                }
+                if (item.isPneumonia()) {
+                    ratio += 1;
+                }
+                if (item.isSoreThroat()) {
+                    ratio += 1;
+                }
+                if (item.isTired()) {
+                    ratio += 1;
+                }
+                String birthDay = dateHelper.convertDateToString(item.getAccount().getBirthDay(), "MM/dd/yyyy");
+                AccountResponseByAll accountResponseByAll = accountMapper.accountResponseByAllMap(item.getAccount(), birthDay);
+                accountResponseByAll.setRatio(ratio);
+                accountResponseByAllList.add(accountResponseByAll);
+            });
+            Collections.sort(accountResponseByAllList, new Comparator<AccountResponseByAll>() {
+                @Override
+                public int compare(AccountResponseByAll o1, AccountResponseByAll o2) {
+                    if (o1.getRatio() > o2.getRatio()) {                    //so sanh điểm và sắp xếp theo chiều giam dần.
+                        return -1;
+                    }
+                    return 1;
+                }
+            });
+        }
+        return accountResponseByAllList;
+
     }
 
     @Override
@@ -294,15 +333,13 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
     @Override
     public QuestionResponse detailDeclareRecent(String phone) {
         Question question = questionRepository.detailDeclareRecent(phone);
-
-        if(!Objects.isNull(question)){
+        if (!Objects.isNull(question)) {
             String birthDay = dateHelper.convertDateToString(question.getAccount().getBirthDay(), "dd/MM/yyyy");
             String updateAt = dateHelper.convertDateToString(question.getCreatedAt(), "dd/MM/yyyy hh:mm:ss");
             return declareMapper.questionResponseMap(question, birthDay, updateAt);
-        }else {
+        } else {
             throw new SpringException("khong tim thay ai!!!");
         }
-
     }
 
 
