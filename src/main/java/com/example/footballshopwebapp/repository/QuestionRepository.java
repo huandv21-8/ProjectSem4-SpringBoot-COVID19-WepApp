@@ -30,4 +30,12 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             "a on a.max_time = question.created_at", nativeQuery = true)
     List<Question> listQuestionRecent();
 
+    @Query(value = "Select question.* from question inner join (SELECT MAX(created_at) as max_time FROM question \n" +
+            "            inner join (SELECT account.account_id as account_id FROM account WHERE active= true AND name" +
+            " LIKE %:name%  AND birth_day LIKE %:birthDay% AND phone LIKE %:phone%) b on b.account_id = question.account_id GROUP BY b.account_id) \n" +
+            "            a on a.max_time = question.created_at;", nativeQuery = true)
+    List<Question> findAllAccountSearch(@Param("name") String name,
+                                        @Param("birthDay") String birthDay,
+                                        @Param("phone") String phone);
+
 }

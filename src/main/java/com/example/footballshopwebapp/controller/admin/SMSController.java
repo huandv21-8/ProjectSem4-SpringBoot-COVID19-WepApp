@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 public class SMSController {
 
 
-    private final SmsService service;
+    private final SmsService serviceSms;
 
 
     private SimpMessagingTemplate webSocket;
@@ -31,7 +31,7 @@ public class SMSController {
     @PostMapping("/mobile")
     public ResponseEntity<Boolean> smsSubmit(@RequestBody @Validated SmsPojo sms) {
         try {
-            service.send(sms);
+            serviceSms.send(sms.getPhone());
         } catch (Exception e) {
             return new ResponseEntity<Boolean>(false, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -39,9 +39,10 @@ public class SMSController {
         return new ResponseEntity<Boolean>(true, HttpStatus.OK);
     }
 
+
     @PostMapping("/verifyOtp")
     public Boolean verifyOtp(@RequestBody @Validated Otp otp) {
-        return service.verifyOtp(otp);
+        return serviceSms.verifyOtp(otp);
     }
 
     private String getTimeStamp() {

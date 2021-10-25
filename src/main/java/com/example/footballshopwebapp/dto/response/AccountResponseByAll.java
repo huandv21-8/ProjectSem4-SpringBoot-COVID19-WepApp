@@ -23,4 +23,5 @@ public class AccountResponseByAll {
     private String address;
 
     private int ratio;
+    private String dateDeclare;
 }

@@ -151,7 +151,7 @@ public class StatisticalPeopleServiceImp implements StatisticalPeopleService {
         Common todayInternalCommon = new Common(todayInternal.getInt("death"), todayInternal.getInt("treating"), todayInternal.getInt("cases"), todayInternal.getInt("recovered"));
         JSONObject todayWorld = today.getJSONObject("world");
         Common todayWorldCommon = new Common(todayWorld.getInt("death"), todayWorld.getInt("treating"), todayWorld.getInt("cases"), todayWorld.getInt("recovered"));
-        Total todayDTO = new Total(totalInternalCommon, totalWorldCommon);
+        Total todayDTO = new Total(todayInternalCommon, todayWorldCommon);
         dataCallApiJsonNcov.setToday(todayDTO);
 
         // OVERVIEW
@@ -185,6 +185,7 @@ public class StatisticalPeopleServiceImp implements StatisticalPeopleService {
             locationsDTO.setCases(jsonLocation.getInt("cases"));
             locationsDTO.setRecovered(jsonLocation.getInt("recovered"));
             locationsDTO.setCasesToday(jsonLocation.getInt("casesToday"));
+            locationsList.add(locationsDTO);
         }
         dataCallApiJsonNcov.setLocations(locationsList);
 

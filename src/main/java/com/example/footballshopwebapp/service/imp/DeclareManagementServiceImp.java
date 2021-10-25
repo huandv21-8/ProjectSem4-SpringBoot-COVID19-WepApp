@@ -2,6 +2,7 @@ package com.example.footballshopwebapp.service.imp;
 
 import com.example.footballshopwebapp.dto.request.AccountRequest;
 import com.example.footballshopwebapp.dto.request.DeclareRequest;
+import com.example.footballshopwebapp.dto.request.ListPhoneRequest;
 import com.example.footballshopwebapp.dto.response.AccountResponse;
 import com.example.footballshopwebapp.dto.response.AccountResponseByAll;
 import com.example.footballshopwebapp.dto.response.DeclareResponse;
@@ -10,6 +11,7 @@ import com.example.footballshopwebapp.entity.*;
 import com.example.footballshopwebapp.exceptions.SpringException;
 import com.example.footballshopwebapp.repository.*;
 import com.example.footballshopwebapp.service.DeclareManagementService;
+import com.example.footballshopwebapp.service.SmsService;
 import com.example.footballshopwebapp.share.Message;
 import com.example.footballshopwebapp.share.helper.DateHelper;
 import com.example.footballshopwebapp.share.helper.VariableCommon;
@@ -19,6 +21,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,7 +37,7 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
     private final PeopleRepository peopleRepository;
     private final StatusByTimeRepository statusByTimeRepository;
     private final DeclareMapper declareMapper;
-
+    private final SmsService serviceSms;
 
     @Override
     @Transactional
@@ -162,9 +166,7 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
         }
     }
 
-    @Override
-    public List<AccountResponseByAll> listAccount() {
-        List<Question> questionList = questionRepository.listQuestionRecent();
+    private List<AccountResponseByAll> convertQuestionToAccountResponseAndSort(List<Question> questionList) {
         List<AccountResponseByAll> accountResponseByAllList = new ArrayList<>();
         if (questionList.size() > 0) {
             questionList.stream().forEach(item -> {
@@ -194,7 +196,8 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
                     ratio += 1;
                 }
                 String birthDay = dateHelper.convertDateToString(item.getAccount().getBirthDay(), "MM/dd/yyyy");
-                AccountResponseByAll accountResponseByAll = accountMapper.accountResponseByAllMap(item.getAccount(), birthDay);
+                String dateDeclare = dateHelper.convertDateToString(item.getCreatedAt(), "MM/dd/yyyy");
+                AccountResponseByAll accountResponseByAll = accountMapper.accountResponseByAllMap(item.getAccount(), birthDay, dateDeclare);
                 accountResponseByAll.setRatio(ratio);
                 accountResponseByAllList.add(accountResponseByAll);
             });
@@ -209,7 +212,20 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
             });
         }
         return accountResponseByAllList;
+    }
 
+
+    @Override
+    public List<AccountResponseByAll> listAccount() {
+        List<Question> questionList = questionRepository.listQuestionRecent().stream()
+                .filter(item -> {
+                    LocalDate dateLastFourteen = LocalDate.now().minusDays(14);
+                    LocalDate date1 = item.getCreatedAt().toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
+                    return dateLastFourteen.isBefore(date1);
+                }).collect(Collectors.toList());
+        return convertQuestionToAccountResponseAndSort(questionList);
     }
 
     @Override
@@ -219,7 +235,8 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
             if (optionChoose.equals("deleteAccount") || optionChoose.equals("deleteAllAccount")) {
                 account.setActive(false);
                 accountRepository.save(account);
-            } else {
+            } else if (optionChoose.equals("sickAccount") || optionChoose.equals("sickAllAccount")
+                    || optionChoose.equals("f1Account") || optionChoose.equals("f1AllAccount")) {
                 People people = peopleRepository.findPeople(account.getBirthDay(),
                         account.getCmt(),
                         account.isGender(),
@@ -266,7 +283,10 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
                     statusByTime.setUpdatedAt(dateHelper.getDateNow());
                     statusByTimeRepository.save(statusByTime);
                 }
-
+            }
+            if (optionChoose.equals("smsAllAccount") || optionChoose.equals("smsAccount")) {
+                String phone = "+84" + account.getPhone();
+                serviceSms.sendSmsListPhone(phone);
             }
             return new Message("Thành công");
         } catch (Exception e) {
@@ -291,24 +311,80 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
     public AccountResponseByAll detailAccount(Long accountId) {
         Account account = accountRepository.findAccountByAccountId(accountId);
         String birthDay = dateHelper.convertDateToString(account.getBirthDay(), "MM/dd/yyyy");
-        return accountMapper.accountResponseByAllMap(account, birthDay);
+        String dateDeclare = dateHelper.convertDateToString(account.getBirthDay(), "MM/dd/yyyy");
+        return accountMapper.accountResponseByAllMap(account, birthDay, dateDeclare);
     }
 
     @Override
-    public List<AccountResponseByAll> listAccountSearch(String phone, String name, String birthDay, Long provinceId) {
-        List<AccountResponseByAll> listAccountResponse = null;
-        List<Account> accountList = accountRepository.findAllAccountSearch(name, birthDay, phone);
-        listAccountResponse = accountList.stream()
+    public List<AccountResponseByAll> listAccountSearch(String phone, String name, String birthDay, Long provinceId,
+                                                        boolean fever,
+                                                        boolean cough,
+                                                        boolean shortnessOfBreath,
+                                                        boolean pneumonia,
+                                                        boolean soreThroat,
+                                                        boolean tired,
+                                                        boolean exposureToF0) {
+        if (birthDay == null) {
+            birthDay = "";
+        }
+
+        List<Question> questionList = questionRepository.findAllAccountSearch(name, birthDay, phone);
+
+        List<Question> accountListAfterFilterByProvince = questionList.stream()
                 .filter(item -> {
                     if (provinceId == null || provinceId == 0) {
                         return true;
                     }
-                    return (item.getCommune().getDistrict().getProvince().getProvinceId() == provinceId);
-                }).map(item -> {
-                    String birthDay1 = dateHelper.convertDateToString(item.getBirthDay(), "MM/dd/yyyy");
-                    return accountMapper.accountResponseByAllMap(item, birthDay1);
+                    return (item.getAccount().getCommune().getDistrict().getProvince().getProvinceId() == provinceId);
+                })
+                .filter(item -> {
+                    LocalDate dateLastFourteen = LocalDate.now().minusDays(14);
+                    LocalDate date1 = item.getCreatedAt().toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDate();
+                    return dateLastFourteen.isBefore(date1);
                 }).collect(Collectors.toList());
-        return listAccountResponse;
+
+        List<Question> accountListAfterFilterByAll = new ArrayList<>();
+        accountListAfterFilterByProvince.forEach(item -> {
+            if (fever && item.isFever()) {
+                accountListAfterFilterByAll.add(item);
+            }
+            if (cough && item.isCough()) {
+                if (!accountListAfterFilterByAll.contains(item)) {
+                    accountListAfterFilterByAll.add(item);
+                }
+            }
+            if (shortnessOfBreath && item.isShortnessOfBreath()) {
+                if (!accountListAfterFilterByAll.contains(item)) {
+                    accountListAfterFilterByAll.add(item);
+                }
+            }
+            if (pneumonia && item.isPneumonia()) {
+                if (!accountListAfterFilterByAll.contains(item)) {
+                    accountListAfterFilterByAll.add(item);
+                }
+            }
+            if (soreThroat && item.isSoreThroat()) {
+                if (!accountListAfterFilterByAll.contains(item)) {
+                    accountListAfterFilterByAll.add(item);
+                }
+            }
+            if (tired && item.isTired()) {
+                if (!accountListAfterFilterByAll.contains(item)) {
+                    accountListAfterFilterByAll.add(item);
+                }
+            }
+            if (exposureToF0 && item.isExposureToF0()) {
+                if (!accountListAfterFilterByAll.contains(item)) {
+                    accountListAfterFilterByAll.add(item);
+                }
+            }
+        });
+        if (!exposureToF0 && !tired && !soreThroat && !pneumonia && !shortnessOfBreath && !cough && !fever) {
+            return convertQuestionToAccountResponseAndSort(accountListAfterFilterByProvince);
+        }
+        return convertQuestionToAccountResponseAndSort(accountListAfterFilterByAll);
     }
 
     @Override
@@ -340,6 +416,20 @@ public class DeclareManagementServiceImp implements DeclareManagementService {
         } else {
             throw new SpringException("khong tim thay ai!!!");
         }
+    }
+
+    @Override
+    public Boolean sendSmsListAccount(ListPhoneRequest phoneList) {
+
+        for (String phone : phoneList.getPhoneList()) {
+            try {
+                serviceSms.sendSmsListPhone(phone);
+            } catch (Exception e) {
+
+            }
+
+        }
+        return true;
     }
 
 

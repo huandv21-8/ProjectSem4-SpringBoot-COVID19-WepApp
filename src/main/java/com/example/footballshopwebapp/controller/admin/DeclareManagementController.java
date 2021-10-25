@@ -2,6 +2,7 @@ package com.example.footballshopwebapp.controller.admin;
 
 import com.example.footballshopwebapp.dto.request.AccountRequest;
 import com.example.footballshopwebapp.dto.request.DeclareRequest;
+import com.example.footballshopwebapp.dto.request.ListPhoneRequest;
 import com.example.footballshopwebapp.dto.response.*;
 import com.example.footballshopwebapp.entity.Account;
 import com.example.footballshopwebapp.entity.Question;
@@ -71,10 +72,17 @@ public class DeclareManagementController {
     public ResponseEntity<List<AccountResponseByAll>> listAccountSearch(
             @RequestParam(required = false, name = "phone") String phone,
             @RequestParam(required = false, name = "name") String name,
-            @RequestParam(name = "birthDay") String birthDay,
-            @RequestParam(required = false, name = "provinceId") Long provinceId
+            @RequestParam(required = false, name = "birthDay") String birthDay,
+            @RequestParam(required = false, name = "provinceId") Long provinceId,
+            @RequestParam(required = false, name = "fever") boolean fever,
+            @RequestParam(required = false, name = "cough") boolean cough,
+            @RequestParam(required = false, name = "shortnessOfBreath") boolean shortnessOfBreath,
+            @RequestParam(required = false, name = "pneumonia") boolean pneumonia,
+            @RequestParam(required = false, name = "soreThroat") boolean soreThroat,
+            @RequestParam(required = false, name = "tired") boolean tired,
+            @RequestParam(required = false, name = "exposureToF0") boolean exposureToF0
     ) {
-        return status(HttpStatus.OK).body(declareManagementService.listAccountSearch(phone, name, birthDay, provinceId));
+        return status(HttpStatus.OK).body(declareManagementService.listAccountSearch(phone, name, birthDay, provinceId, fever, cough, shortnessOfBreath, pneumonia, soreThroat, tired, exposureToF0));
     }
 
 
@@ -92,7 +100,7 @@ public class DeclareManagementController {
     @GetMapping(value = "/listDeclareByAccountId")
     public ResponseEntity<List<DeclareResponse>> listDeclareByAccountId(@RequestParam(value = "accountId") Long accountId,
                                                                         @RequestParam(value = "orderByDate") String orderByDate) {
-        return status(HttpStatus.OK).body(declareManagementService.listDeclareByAccountId(accountId,orderByDate));
+        return status(HttpStatus.OK).body(declareManagementService.listDeclareByAccountId(accountId, orderByDate));
     }
 
     @GetMapping(value = "/detailDeclare/{questionId}")   // lấy khai báo chi tiết theo id
@@ -105,4 +113,9 @@ public class DeclareManagementController {
         return status(HttpStatus.OK).body(declareManagementService.detailDeclareRecent(phone));
     }
 
+
+    @PostMapping(value = "/sendSmsListAccount")
+    public ResponseEntity<Boolean> sendSmsListAccount(@RequestBody ListPhoneRequest phoneList) {
+        return status(HttpStatus.OK).body(declareManagementService.sendSmsListAccount(phoneList));
+    }
 }
